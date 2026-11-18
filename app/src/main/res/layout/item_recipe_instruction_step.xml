@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:paddingVertical="16dp">
+
+    <TextView
+        android:id="@+id/text_step_number"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:background="@drawable/pantry_recipe_step_bg"
+        android:gravity="center"
+        android:textColor="#315B40"
+        android:textSize="13sp"
+        android:textStyle="bold"
+        tools:text="1" />
+
+    <TextView
+        android:id="@+id/text_step_desc"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:layout_marginStart="12dp"
+        android:layout_gravity="center_vertical"
+        android:lineSpacingExtra="3dp"
+        android:textSize="14sp"
+        android:textColor="#24372B"
+        tools:text="Whisk eggs in a bowl with a pinch of salt." />
+</LinearLayout>

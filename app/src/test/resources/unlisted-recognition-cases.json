@@ -1,0 +1,102 @@
+[
+  {
+    "name": "Kohlrabi",
+    "category": "Food & Beverage",
+    "subcategory": "Produce"
+  },
+  {
+    "name": "Rambutan",
+    "category": "Food & Beverage",
+    "subcategory": "Produce"
+  },
+  {
+    "name": "Mackerel",
+    "category": "Food & Beverage",
+    "subcategory": "Meat & Seafood"
+  },
+  {
+    "name": "Paneer",
+    "category": "Food & Beverage",
+    "subcategory": "Dairy"
+  },
+  {
+    "name": "Sourdough",
+    "category": "Food & Beverage",
+    "subcategory": "Bakery"
+  },
+  {
+    "name": "Miso paste",
+    "category": "Food & Beverage",
+    "subcategory": "Pantry"
+  },
+  {
+    "name": "Tempeh",
+    "category": "Food & Beverage",
+    "subcategory": "Pantry"
+  },
+  {
+    "name": "Cardamom",
+    "category": "Food & Beverage",
+    "subcategory": "Spices"
+  },
+  {
+    "name": "Kombucha",
+    "category": "Food & Beverage",
+    "subcategory": "Beverages"
+  },
+  {
+    "name": "Kefir drink",
+    "category": "Food & Beverage",
+    "subcategory": "Beverages"
+  },
+  {
+    "name": "Nougat",
+    "category": "Food & Beverage",
+    "subcategory": "Snacks & Sweets"
+  },
+  {
+    "name": "Halva",
+    "category": "Food & Beverage",
+    "subcategory": "Snacks & Sweets"
+  },
+  {
+    "name": "Edamame",
+    "category": "Food & Beverage",
+    "subcategory": "Frozen Foods"
+  },
+  {
+    "name": "Lint roller",
+    "category": "Household Essentials",
+    "subcategory": null
+  },
+  {
+    "name": "Measuring jug",
+    "category": "Household Essentials",
+    "subcategory": null
+  },
+  {
+    "name": "Silicone spatula",
+    "category": "Household Essentials",
+    "subcategory": null
+  },
+  {
+    "name": "Cotton towel",
+    "category": "Household Essentials",
+    "subcategory": null
+  },
+  {
+    "name": "Tweezers",
+    "category": "Personal Care",
+    "subcategory": null
+  },
+  {
+    "name": "Contact lens solution",
+    "category": "Personal Care",
+    "subcategory": null
+  },
+  {
+    "name": "Cuticle trimmer",
+    "category": "Personal Care",
+    "subcategory": null
+  }
+]

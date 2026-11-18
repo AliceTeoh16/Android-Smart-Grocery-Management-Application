@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent" android:layout_height="wrap_content"
+    android:orientation="vertical" android:paddingStart="24dp" android:paddingTop="24dp"
+    android:paddingEnd="24dp" android:paddingBottom="16dp">
+
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:gravity="center_vertical" android:orientation="horizontal">
+        <FrameLayout android:layout_width="42dp" android:layout_height="42dp"
+            android:background="@drawable/pantry_share_icon_bg">
+            <ImageView android:layout_width="23dp" android:layout_height="23dp"
+                android:layout_gravity="center" android:importantForAccessibility="no"
+                android:src="@drawable/ic_share_24" app:tint="#315B40" />
+        </FrameLayout>
+        <TextView android:layout_width="0dp" android:layout_height="wrap_content"
+            android:layout_weight="1" android:layout_marginStart="12dp"
+            android:text="Share shopping list" android:textColor="#24372B"
+            android:textSize="21sp" android:textStyle="bold" />
+    </LinearLayout>
+    <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:layout_marginTop="14dp" android:text="Choose how to share your shopping list."
+        android:textColor="#738075" android:textSize="13sp" />
+</LinearLayout>

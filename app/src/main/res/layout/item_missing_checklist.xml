@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent" android:layout_height="wrap_content"
+    app:cardBackgroundColor="#FFFFFF" app:cardCornerRadius="0dp" app:cardElevation="0dp">
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical">
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:minHeight="56dp" android:orientation="horizontal" android:gravity="center_vertical">
+            <CheckBox android:id="@+id/checkbox_checklist_item" android:layout_width="40dp" android:layout_height="48dp"
+                android:button="@drawable/pantry_checkbox" app:buttonCompat="@drawable/pantry_checkbox"
+                android:buttonTint="@null" app:buttonTint="@null" app:buttonIcon="@null" app:useMaterialThemeColors="false"
+                android:checked="true" android:contentDescription="Select missing item" />
+            <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1"
+                android:orientation="vertical" android:layout_marginStart="8dp" android:layout_marginEnd="8dp"
+                android:paddingTop="8dp" android:paddingBottom="8dp">
+                <TextView android:id="@+id/text_checklist_item_name" android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:textColor="#24372B" android:textSize="13sp" android:textStyle="bold" />
+                <TextView android:id="@+id/text_checklist_quantity" android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp" android:textColor="#738075" android:textSize="12sp" />
+                <TextView android:id="@+id/text_checklist_category" android:layout_width="wrap_content" android:layout_height="wrap_content" android:visibility="gone" />
+            </LinearLayout>
+            <TextView android:id="@+id/text_checklist_added_status" android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:visibility="gone" android:text="Added" android:textColor="#315B40" android:textSize="10sp" android:textStyle="bold"
+                android:paddingStart="8dp" android:paddingEnd="8dp" android:paddingTop="3dp" android:paddingBottom="3dp"
+                android:background="@drawable/bg_badge_cooked" />
+        </LinearLayout>
+        <View android:layout_width="match_parent" android:layout_height="0.5dp" android:background="#DEE4D8" />
+    </LinearLayout>
+</androidx.cardview.widget.CardView>

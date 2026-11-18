@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="purchase_confirmation_compose_view" type="id" />
+    <item name="purchase_history_compose_view" type="id" />
+    <item name="add_shopping_compose_view" type="id" />
+    <item name="budget_tracker_compose_view" type="id" />
+    <item name="ai_checklist_compose_view" type="id" />
+    <item name="profile_settings_compose_view" type="id" />
+    <item name="household_context_compose_view" type="id" />
+    <item name="household_management_compose_view" type="id" />
+    <item name="household_invitation_compose_view" type="id" />
+    <item name="inventory_feature_compose_view" type="id" />
+    <item name="shopping_feature_compose_view" type="id" />
+    <item name="add_grocery_fragment_container" type="id" />
+    <item name="add_grocery_compose_view" type="id" />
+    <item name="checklist_history_compose_view" type="id" />
+</resources>

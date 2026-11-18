@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="10dp"
+    android:background="@drawable/pantry_deduction_item_bg"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <TextView
+        android:id="@+id/text_deduct_item_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="#24372B"
+        android:textSize="15sp"
+        android:textStyle="bold"
+        tools:text="Eggs" />
+
+    <TextView
+        android:id="@+id/text_deduct_item_meta"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="6dp"
+        android:textColor="#738075"
+        android:textSize="12sp"
+        tools:text="Recipe: 2.0 pcs - In stock: 6" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="14dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Quantity used"
+            android:textColor="#315B40"
+            android:textSize="13sp" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/pantry_inventory_quantity_bg"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <ImageButton
+                android:id="@+id/button_deduct_decrement"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:background="?android:attr/selectableItemBackgroundBorderless"
+                android:contentDescription="Decrease quantity"
+                android:padding="14dp"
+                android:src="@drawable/ic_minus_24"
+                app:tint="#315B40" />
+
+            <TextView
+                android:id="@+id/text_deduct_quantity"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:minWidth="36dp"
+                android:gravity="center"
+                android:textColor="#315B40"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                tools:text="2" />
+
+            <ImageButton
+                android:id="@+id/button_deduct_increment"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:background="?android:attr/selectableItemBackgroundBorderless"
+                android:contentDescription="Increase quantity"
+                android:padding="14dp"
+                android:src="@drawable/ic_plus_24"
+                app:tint="#315B40" />
+        </LinearLayout>
+    </LinearLayout>
+</LinearLayout>

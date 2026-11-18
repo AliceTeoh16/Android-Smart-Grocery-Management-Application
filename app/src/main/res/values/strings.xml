@@ -1,0 +1,70 @@
+<resources>
+    <string name="app_name">ShelfWise</string>
+    <string name="new_to_app">New to %1$s?</string>
+    <string name="app_profile_footer">%1$s · Made for a little less waste · v1.0</string>
+    <string name="title_inventory">Inventory</string>
+    <string name="title_recipes">AI Checklist</string>
+    <string name="title_shopping_list">Shopping List</string>
+    <string name="title_shopping_nav">Shopping</string>
+    <string name="title_budget">Budget Tracker</string>
+    <string name="title_budget_nav">Budget</string>
+    <string name="search_placeholder">Search grocery items...</string>
+    <string name="add_item">Add Item</string>
+    <string name="quick_add">Quick Add</string>
+    <string name="voice_input">Say: add milk, used 2 eggs, or suggest recipe with tomatoes</string>
+    <string name="voice_input_hint">Voice commands</string>
+    
+    <!-- Item fields -->
+    <string name="item_name">Item Name</string>
+    <string name="quantity">Quantity</string>
+    <string name="price">Price (RM)</string>
+    <string name="category">Category</string>
+    <string name="expiry_date">Expiry Date</string>
+    <string name="threshold">Low Stock Threshold</string>
+    <string name="expiry_warning_days">Expiry Warning Days</string>
+    
+    <!-- Budget status strings -->
+    <string name="budget_limit">Monthly Budget Limit (RM)</string>
+    <string name="total_spent">Total Spent: </string>
+    <string name="remaining_budget">Remaining: </string>
+    <string name="set_limit">Set Limit</string>
+    <string name="budget_overview">Budget Overview</string>
+    <string name="category_breakdown">Spending by Category</string>
+    
+    <!-- Recipe strings -->
+    <string name="search_recipe_placeholder">What do you want to cook?</string>
+    <string name="recipe_recommendations">Missing Items Checklist</string>
+    <string name="available_ingredients">Available Ingredients (Included)</string>
+    <string name="pantry_staples">Pantry Staples</string>
+    <string name="prioritize_expiring">Prioritize items expiring soon</string>
+    <string name="generate_ai_recipes">Generate Checklist</string>
+    <string name="cooked_this">Cooked This! Auto-Deduct Stock</string>
+    <string name="ingredients_title">Ingredients Needed</string>
+    <string name="steps_title">Cooking Instructions</string>
+    <string name="watch_video">Watch Video Tutorial</string>
+    <string name="missing_ingredients">Missing ingredients: %s</string>
+
+    <!-- Authentication -->
+    <string name="auth_title">@string/app_name</string>
+    <string name="auth_subtitle">Connect with members &amp; family to share your pantry &amp; budget.</string>
+    <string name="auth_sign_in_mode_label">Sign in to your household pantry</string>
+    <string name="auth_create_mode_label">Create your shared pantry account</string>
+    <string name="auth_continue_google">Continue with Google</string>
+    <string name="auth_divider">Or log in with email</string>
+    <string name="auth_email_hint">Email Address</string>
+    <string name="auth_password_hint">Password</string>
+    <string name="auth_forgot_password">Forgot Password?</string>
+    <string name="auth_sign_in">Sign In</string>
+    <string name="auth_create_account">Create Account</string>
+    <string name="auth_toggle_sign_up">Don\'t have an account? Sign Up</string>
+    <string name="auth_toggle_sign_in">Already have an account? Sign In</string>
+
+    <!-- Shared collaboration -->
+    <string name="shared_household_badge">Home Pantry 3</string>
+    <string name="shared_connect_title">Share &amp; Connect</string>
+    <string name="shared_inventory_login_prompt">Log in to sync &amp; share inventory with members or family</string>
+    <string name="shared_connect_signed_out">Log in to share list with members or family</string>
+    <string name="shared_connect_signed_in">Home Pantry is live with 3 members</string>
+    <string name="shared_login_button">Log In</string>
+    <string name="shared_invite_button">+ Invite</string>
+</resources>

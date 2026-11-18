@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Pantry.BottomNavigation.Indicator" parent="Widget.Material3.BottomNavigationView.ActiveIndicator">
+        <item name="android:color">#E9E1F6</item>
+        <item name="android:height">30dp</item>
+        <item name="android:width">62dp</item>
+    </style>
+    <style name="Pantry.BottomNavigation.Label" parent="TextAppearance.Material3.LabelSmall">
+        <item name="android:textSize">10sp</item>
+    </style>
+    <style name="Pantry.BottomNavigation.Label.Active" parent="Pantry.BottomNavigation.Label">
+        <item name="android:textStyle">bold</item>
+    </style>
+</resources>

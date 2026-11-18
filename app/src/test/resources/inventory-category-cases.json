@@ -1,0 +1,746 @@
+[
+  {
+    "name": "Tomato",
+    "selection": "Produce"
+  },
+  {
+    "name": "Green bell pepper",
+    "selection": "Produce"
+  },
+  {
+    "name": "Fresh oranges",
+    "selection": "Produce"
+  },
+  {
+    "name": "Mint leaves",
+    "selection": "Produce"
+  },
+  {
+    "name": "番茄",
+    "selection": "Produce"
+  },
+  {
+    "name": "青椒",
+    "selection": "Produce"
+  },
+  {
+    "name": "sayur",
+    "selection": "Produce"
+  },
+  {
+    "name": "Chicken",
+    "selection": "Meat & Seafood"
+  },
+  {
+    "name": "Salmon",
+    "selection": "Meat & Seafood"
+  },
+  {
+    "name": "Prawns",
+    "selection": "Meat & Seafood"
+  },
+  {
+    "name": "牛肉",
+    "selection": "Meat & Seafood"
+  },
+  {
+    "name": "daging ayam",
+    "selection": "Meat & Seafood"
+  },
+  {
+    "name": "Milk",
+    "selection": "Dairy"
+  },
+  {
+    "name": "Eggs",
+    "selection": "Dairy"
+  },
+  {
+    "name": "Yogurt",
+    "selection": "Dairy"
+  },
+  {
+    "name": "Chocolate milk",
+    "selection": "Dairy"
+  },
+  {
+    "name": "牛奶",
+    "selection": "Dairy"
+  },
+  {
+    "name": "巧克力奶",
+    "selection": "Dairy"
+  },
+  {
+    "name": "susu",
+    "selection": "Dairy"
+  },
+  {
+    "name": "Bread",
+    "selection": "Bakery"
+  },
+  {
+    "name": "Croissant",
+    "selection": "Bakery"
+  },
+  {
+    "name": "面包",
+    "selection": "Bakery"
+  },
+  {
+    "name": "roti",
+    "selection": "Bakery"
+  },
+  {
+    "name": "Rice",
+    "selection": "Pantry"
+  },
+  {
+    "name": "Pasta",
+    "selection": "Pantry"
+  },
+  {
+    "name": "Peanut butter",
+    "selection": "Pantry"
+  },
+  {
+    "name": "Soy sauce",
+    "selection": "Pantry"
+  },
+  {
+    "name": "Chocolate spread",
+    "selection": "Pantry"
+  },
+  {
+    "name": "大米",
+    "selection": "Pantry"
+  },
+  {
+    "name": "花生酱",
+    "selection": "Pantry"
+  },
+  {
+    "name": "beras",
+    "selection": "Pantry"
+  },
+  {
+    "name": "Cumin",
+    "selection": "Spices"
+  },
+  {
+    "name": "Salt",
+    "selection": "Spices"
+  },
+  {
+    "name": "Black pepper",
+    "selection": "Spices"
+  },
+  {
+    "name": "Garlic powder",
+    "selection": "Spices"
+  },
+  {
+    "name": "盐",
+    "selection": "Spices"
+  },
+  {
+    "name": "garam",
+    "selection": "Spices"
+  },
+  {
+    "name": "Water",
+    "selection": "Beverages"
+  },
+  {
+    "name": "Coffee",
+    "selection": "Beverages"
+  },
+  {
+    "name": "Tea",
+    "selection": "Beverages"
+  },
+  {
+    "name": "Juices",
+    "selection": "Beverages"
+  },
+  {
+    "name": "Orange juice",
+    "selection": "Beverages"
+  },
+  {
+    "name": "Apple juice",
+    "selection": "Beverages"
+  },
+  {
+    "name": "咖啡",
+    "selection": "Beverages"
+  },
+  {
+    "name": "果汁",
+    "selection": "Beverages"
+  },
+  {
+    "name": "kopi",
+    "selection": "Beverages"
+  },
+  {
+    "name": "jus oren",
+    "selection": "Beverages"
+  },
+  {
+    "name": "Chips",
+    "selection": "Snacks & Sweets"
+  },
+  {
+    "name": "Biscuits",
+    "selection": "Snacks & Sweets"
+  },
+  {
+    "name": "Chocolates",
+    "selection": "Snacks & Sweets"
+  },
+  {
+    "name": "Nuts",
+    "selection": "Snacks & Sweets"
+  },
+  {
+    "name": "Potato chips",
+    "selection": "Snacks & Sweets"
+  },
+  {
+    "name": "Cream crackers",
+    "selection": "Snacks & Sweets"
+  },
+  {
+    "name": "Butter cookies",
+    "selection": "Snacks & Sweets"
+  },
+  {
+    "name": "Tea biscuits",
+    "selection": "Snacks & Sweets"
+  },
+  {
+    "name": "Milk chocolate",
+    "selection": "Snacks & Sweets"
+  },
+  {
+    "name": "饼干",
+    "selection": "Snacks & Sweets"
+  },
+  {
+    "name": "巧克力",
+    "selection": "Snacks & Sweets"
+  },
+  {
+    "name": "biskut",
+    "selection": "Snacks & Sweets"
+  },
+  {
+    "name": "Frozen dumplings",
+    "selection": "Frozen Foods"
+  },
+  {
+    "name": "Ice cream",
+    "selection": "Frozen Foods"
+  },
+  {
+    "name": "Frozen meat",
+    "selection": "Frozen Foods"
+  },
+  {
+    "name": "Frozen chicken",
+    "selection": "Frozen Foods"
+  },
+  {
+    "name": "Coffee ice cream",
+    "selection": "Frozen Foods"
+  },
+  {
+    "name": "冷冻饺子",
+    "selection": "Frozen Foods"
+  },
+  {
+    "name": "雪糕",
+    "selection": "Frozen Foods"
+  },
+  {
+    "name": "ladu beku",
+    "selection": "Frozen Foods"
+  },
+  {
+    "name": "ais krim",
+    "selection": "Frozen Foods"
+  },
+  {
+    "name": "Toilet Paper",
+    "selection": "Household Essentials"
+  },
+  {
+    "name": "Dishwashing detergent",
+    "selection": "Household Essentials"
+  },
+  {
+    "name": "Rubber gloves",
+    "selection": "Household Essentials"
+  },
+  {
+    "name": "Garbage bags",
+    "selection": "Household Essentials"
+  },
+  {
+    "name": "Microfiber cloths",
+    "selection": "Household Essentials"
+  },
+  {
+    "name": "Dustpan",
+    "selection": "Household Essentials"
+  },
+  {
+    "name": "Scrub brush",
+    "selection": "Household Essentials"
+  },
+  {
+    "name": "Toilet brush",
+    "selection": "Household Essentials"
+  },
+  {
+    "name": "Wastebin",
+    "selection": "Household Essentials"
+  },
+  {
+    "name": "Plunger",
+    "selection": "Household Essentials"
+  },
+  {
+    "name": "Fabric conditioner",
+    "selection": "Household Essentials"
+  },
+  {
+    "name": "Laundry detergent",
+    "selection": "Household Essentials"
+  },
+  {
+    "name": "Dish soap",
+    "selection": "Household Essentials"
+  },
+  {
+    "name": "Paper towels",
+    "selection": "Household Essentials"
+  },
+  {
+    "name": "卫生纸",
+    "selection": "Household Essentials"
+  },
+  {
+    "name": "洗洁精",
+    "selection": "Household Essentials"
+  },
+  {
+    "name": "洗衣液",
+    "selection": "Household Essentials"
+  },
+  {
+    "name": "tisu tandas",
+    "selection": "Household Essentials"
+  },
+  {
+    "name": "pencuci pinggan",
+    "selection": "Household Essentials"
+  },
+  {
+    "name": "beg sampah",
+    "selection": "Household Essentials"
+  },
+  {
+    "name": "Shampoo",
+    "selection": "Personal Care"
+  },
+  {
+    "name": "Toothpaste",
+    "selection": "Personal Care"
+  },
+  {
+    "name": "Toothbrushes",
+    "selection": "Personal Care"
+  },
+  {
+    "name": "Body lotion",
+    "selection": "Personal Care"
+  },
+  {
+    "name": "Hand soap",
+    "selection": "Personal Care"
+  },
+  {
+    "name": "Hair conditioner",
+    "selection": "Personal Care"
+  },
+  {
+    "name": "Milk body wash",
+    "selection": "Personal Care"
+  },
+  {
+    "name": "洗发水",
+    "selection": "Personal Care"
+  },
+  {
+    "name": "牙刷",
+    "selection": "Personal Care"
+  },
+  {
+    "name": "沐浴露",
+    "selection": "Personal Care"
+  },
+  {
+    "name": "syampu",
+    "selection": "Personal Care"
+  },
+  {
+    "name": "ubat gigi",
+    "selection": "Personal Care"
+  },
+  {
+    "name": "sabun mandi",
+    "selection": "Personal Care"
+  },
+  {
+    "name": "Tea cup",
+    "selection": "Household Essentials"
+  },
+  {
+    "name": "Teacup",
+    "selection": "Household Essentials"
+  },
+  {
+    "name": "Empty teacup",
+    "selection": "Household Essentials"
+  },
+  {
+    "name": "Mug",
+    "selection": "Household Essentials"
+  },
+  {
+    "name": "Coffee cup",
+    "selection": "Household Essentials"
+  },
+  {
+    "name": "Ceramic cup",
+    "selection": "Household Essentials"
+  },
+  {
+    "name": "Drinking glass",
+    "selection": "Household Essentials"
+  },
+  {
+    "name": "Tea cups",
+    "selection": "Household Essentials"
+  },
+  {
+    "name": "茶杯",
+    "selection": "Household Essentials"
+  },
+  {
+    "name": "咖啡杯",
+    "selection": "Household Essentials"
+  },
+  {
+    "name": "cawan kosong",
+    "selection": "Household Essentials"
+  },
+  {
+    "name": "Cup of tea",
+    "selection": "Beverages"
+  },
+  {
+    "name": "Cup of coffee",
+    "selection": "Beverages"
+  },
+  {
+    "name": "Glass of water",
+    "selection": "Beverages"
+  },
+  {
+    "name": "cawan teh",
+    "selection": "Beverages"
+  },
+  {
+    "name": "一杯茶",
+    "selection": "Beverages"
+  },
+  {
+    "name": "Peanut butter cups",
+    "selection": "Snacks & Sweets"
+  },
+  {
+    "name": "Dragonfruit",
+    "selection": "Produce"
+  },
+  {
+    "name": "Papaya",
+    "selection": "Produce"
+  },
+  {
+    "name": "Pear",
+    "selection": "Produce"
+  },
+  {
+    "name": "Mango",
+    "selection": "Produce"
+  },
+  {
+    "name": "Lemon",
+    "selection": "Produce"
+  },
+  {
+    "name": "Lime",
+    "selection": "Produce"
+  },
+  {
+    "name": "Mushrooms",
+    "selection": "Produce"
+  },
+  {
+    "name": "Cucumber",
+    "selection": "Produce"
+  },
+  {
+    "name": "Leafy greens",
+    "selection": "Produce"
+  },
+  {
+    "name": "Almond milk",
+    "selection": "Dairy"
+  },
+  {
+    "name": "Oat milk",
+    "selection": "Dairy"
+  },
+  {
+    "name": "Soy milk",
+    "selection": "Dairy"
+  },
+  {
+    "name": "Soap dispenser",
+    "selection": "Household Essentials"
+  },
+  {
+    "name": "Soap dishes",
+    "selection": "Household Essentials"
+  },
+  {
+    "name": "Toothbrush holder",
+    "selection": "Household Essentials"
+  },
+  {
+    "name": "Laundry basket",
+    "selection": "Household Essentials"
+  },
+  {
+    "name": "Batteries",
+    "selection": "Household Essentials"
+  },
+  {
+    "name": "Light bulb",
+    "selection": "Household Essentials"
+  },
+  {
+    "name": "Candles",
+    "selection": "Household Essentials"
+  },
+  {
+    "name": "Adhesive tape",
+    "selection": "Household Essentials"
+  },
+  {
+    "name": "Aluminum foil",
+    "selection": "Household Essentials"
+  },
+  {
+    "name": "Cling film",
+    "selection": "Household Essentials"
+  },
+  {
+    "name": "Baking paper",
+    "selection": "Household Essentials"
+  },
+  {
+    "name": "Storage bag",
+    "selection": "Household Essentials"
+  },
+  {
+    "name": "Dish rack",
+    "selection": "Household Essentials"
+  },
+  {
+    "name": "Clothes hangers",
+    "selection": "Household Essentials"
+  },
+  {
+    "name": "电池",
+    "selection": "Household Essentials"
+  },
+  {
+    "name": "肥皂盒",
+    "selection": "Household Essentials"
+  },
+  {
+    "name": "bateri",
+    "selection": "Household Essentials"
+  },
+  {
+    "name": "Menstrual cup",
+    "selection": "Personal Care"
+  },
+  {
+    "name": "Makeup sponge",
+    "selection": "Personal Care"
+  },
+  {
+    "name": "Makeup brush",
+    "selection": "Personal Care"
+  },
+  {
+    "name": "Hairbrush",
+    "selection": "Personal Care"
+  },
+  {
+    "name": "Comb",
+    "selection": "Personal Care"
+  },
+  {
+    "name": "Hand cream",
+    "selection": "Personal Care"
+  },
+  {
+    "name": "Face cream",
+    "selection": "Personal Care"
+  },
+  {
+    "name": "Facial cleanser",
+    "selection": "Personal Care"
+  },
+  {
+    "name": "Serum",
+    "selection": "Personal Care"
+  },
+  {
+    "name": "Lipstick",
+    "selection": "Personal Care"
+  },
+  {
+    "name": "Lip balm",
+    "selection": "Personal Care"
+  },
+  {
+    "name": "Mascara",
+    "selection": "Personal Care"
+  },
+  {
+    "name": "Eyeliner",
+    "selection": "Personal Care"
+  },
+  {
+    "name": "Nail polish",
+    "selection": "Personal Care"
+  },
+  {
+    "name": "Nail clippers",
+    "selection": "Personal Care"
+  },
+  {
+    "name": "Cotton pads",
+    "selection": "Personal Care"
+  },
+  {
+    "name": "Cotton swabs",
+    "selection": "Personal Care"
+  },
+  {
+    "name": "Perfume",
+    "selection": "Personal Care"
+  },
+  {
+    "name": "Cologne",
+    "selection": "Personal Care"
+  },
+  {
+    "name": "Body spray",
+    "selection": "Personal Care"
+  },
+  {
+    "name": "Hair oil",
+    "selection": "Personal Care"
+  },
+  {
+    "name": "Beard oil",
+    "selection": "Personal Care"
+  },
+  {
+    "name": "Shaving cream",
+    "selection": "Personal Care"
+  },
+  {
+    "name": "Hair gel",
+    "selection": "Personal Care"
+  },
+  {
+    "name": "Hair dye",
+    "selection": "Personal Care"
+  },
+  {
+    "name": "Mouthwash",
+    "selection": "Personal Care"
+  },
+  {
+    "name": "Baby wipes",
+    "selection": "Personal Care"
+  },
+  {
+    "name": "Baby diapers",
+    "selection": "Personal Care"
+  },
+  {
+    "name": "Soap",
+    "selection": "Personal Care"
+  },
+  {
+    "name": "Bar of soap",
+    "selection": "Personal Care"
+  },
+  {
+    "name": "Liquid soap",
+    "selection": "Personal Care"
+  },
+  {
+    "name": "月经杯",
+    "selection": "Personal Care"
+  },
+  {
+    "name": "美妆蛋",
+    "selection": "Personal Care"
+  },
+  {
+    "name": "口红",
+    "selection": "Personal Care"
+  },
+  {
+    "name": "护手霜",
+    "selection": "Personal Care"
+  },
+  {
+    "name": "香水",
+    "selection": "Personal Care"
+  },
+  {
+    "name": "香皂",
+    "selection": "Personal Care"
+  },
+  {
+    "name": "gincu",
+    "selection": "Personal Care"
+  },
+  {
+    "name": "krim tangan",
+    "selection": "Personal Care"
+  }
+]
