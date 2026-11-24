@@ -247,3 +247,23 @@ Additional project documentation is available in:
 - [END_TO_END_ARCHITECTURE_WORKFLOW.md](END_TO_END_ARCHITECTURE_WORKFLOW.md)
 - [PROJECT_STRUCTURE_FUNCTION_ALGORITHM.md](PROJECT_STRUCTURE_FUNCTION_ALGORITHM.md)
 - [REQUIREMENT_EXISTENCE_CHECK.md](REQUIREMENT_EXISTENCE_CHECK.md)
+
+## UI Design
+### 1. Home Page Overview
+<img width="412" height="917" alt="Home overview" src="https://github.com/user-attachments/assets/08b57d1d-b580-4d41-9234-8813f0d3846d" />
+
+### 2. Inventory Page
+<img width="412" height="917" alt="Smart Inventory" src="https://github.com/user-attachments/assets/b594ad57-176b-47fc-a4f7-c8d539dcf79d" />
+
+### 3. Shopping List Page
+<img width="412" height="917" alt="Shopping List" src="https://github.com/user-attachments/assets/10a80f53-9773-42df-9e92-187634368966" />
+
+### 4. AI-Checklist Page
+<img width="412" height="917" alt="AI Checklist" src="https://github.com/user-attachments/assets/c0a5e6f4-4d38-4d63-acd1-c3c9c4d39297" />
+
+### 5. Budget Tracking Page
+<img width="412" height="917" alt="Budget Tracker" src="https://github.com/user-attachments/assets/f93fa449-be0f-40d4-b373-ca304195d180" />
+
+
+
+
