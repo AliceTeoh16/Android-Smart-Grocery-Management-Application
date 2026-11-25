@@ -19,6 +19,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.xmum.smartgrocery.ui.recipes.ChecklistUiState
+import com.xmum.smartgrocery.ui.recipes.ChecklistErrorMessage
 import com.xmum.smartgrocery.data.repository.RecipeRepository
 
 @Composable
@@ -154,10 +155,13 @@ fun AiChecklistScreen(
                 Modifier.padding(top = 8.dp), fontSize = 11.sp, color = PantryColors.Muted)
         }
         if (state.generationError != null) {
+            val error = ChecklistErrorMessage.from(state.generationError)
             Spacer(Modifier.height(12.dp))
             FeatureCard(color = PantryColors.Peach) {
-                Text("Checklist failed", fontWeight = FontWeight.Bold)
-                Text(state.generationError, Modifier.padding(top = 8.dp), fontSize = 13.sp, color = MaterialTheme.colorScheme.error)
+                Text(error.title, fontWeight = FontWeight.Bold)
+                Text(error.message, Modifier.padding(top = 8.dp), fontSize = 13.sp, color = PantryColors.Ink)
+                if (error.showRetry) TextButton(onClick = onGenerate, enabled = !state.isLoading && prompt.isNotBlank(),
+                    modifier = Modifier.align(Alignment.End)) { Text("Try again", color = PantryColors.Green) }
             }
         } else if (result == null && !state.isLoading) {
             Spacer(Modifier.height(16.dp))
