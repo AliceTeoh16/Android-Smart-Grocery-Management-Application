@@ -332,12 +332,12 @@ class RecipeFragment : Fragment() {
             binding.layoutEmptyState.visibility = View.VISIBLE
             binding.recyclerViewRecipes.visibility = View.GONE
             binding.textEmptyState.text = when {
-                state.generationError != null -> "Checklist failed"
+                state.generationError != null -> ChecklistErrorMessage.from(state.generationError).title
                 result != null && missingItems.isEmpty() -> "No missing items"
                 else -> "Ready to check"
             }
             binding.textEmptyStateDetail.text = when {
-                state.generationError != null -> state.generationError
+                state.generationError != null -> ChecklistErrorMessage.from(state.generationError).message
                 result != null && missingItems.isEmpty() -> "Based on the assistant response, your current stock covers the requested dish."
                 else -> "Type a dish request like: Tomato Beef Noodles for 4 people."
             }
