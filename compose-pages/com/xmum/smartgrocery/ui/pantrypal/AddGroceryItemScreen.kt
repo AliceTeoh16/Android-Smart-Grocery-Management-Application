@@ -133,9 +133,8 @@ private fun EditGroceryItemSheet(
         shape = RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp)) {
         CompositionLocalProvider(LocalTextStyle provides MaterialTheme.typography.bodyMedium.copy(
             lineHeight = androidx.compose.ui.unit.TextUnit.Unspecified)) {
-            Column(modifier.fillMaxWidth().heightIn(max = maxHeight).imePadding()
-                .verticalScroll(rememberScrollState()).padding(horizontal = 24.dp)
-                .padding(top = 12.dp, bottom = 100.dp)) {
+            Column(modifier.fillMaxWidth().heightIn(max = maxHeight).imePadding().navigationBarsPadding()
+                .padding(horizontal = 24.dp).padding(top = 12.dp)) {
                 Box(Modifier.align(Alignment.CenterHorizontally).size(42.dp, 4.dp)
                     .background(PantryColors.Border, RoundedCornerShape(2.dp)))
                 Row(Modifier.fillMaxWidth().padding(top = 18.dp, bottom = 16.dp),
@@ -150,42 +149,46 @@ private fun EditGroceryItemSheet(
                         Icon(PantryIcons.Close, "Cancel", Modifier.size(22.dp), tint = PantryColors.Muted)
                     }
                 }
-                Text("Keep your pantry details up to date.", fontSize = 13.sp, color = PantryColors.Muted)
-                Spacer(Modifier.height(22.dp))
-                InventoryDestinationCard(destinationName, destinationHousehold, emptyList(), {}, {}, readOnly = true)
-                saveError?.let { Text(it, color = MaterialTheme.colorScheme.error) }
-                Spacer(Modifier.height(16.dp))
-                FormField("Item name", name, onNameChange, error = nameError)
-                Spacer(Modifier.height(16.dp))
-                InventoryCategorySelector(category, onCategorySelected)
-                Spacer(Modifier.height(16.dp))
-                Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                    FormField("Quantity", quantity, onQuantityChange, Modifier.weight(1f), KeyboardType.Decimal)
-                    FormDropdown("Unit", unit, InventoryUnits.OPTIONS, onUnitSelected, Modifier.weight(1f), !saving)
-                }
-                Text(InventoryUnits.preview(quantity, unit), Modifier.padding(top = 8.dp), fontSize = 12.sp, color = PantryColors.Muted)
-                Spacer(Modifier.height(16.dp))
-                FormField("Total price (RM)", price, onPriceChange, keyboardType = KeyboardType.Decimal)
-                Spacer(Modifier.height(16.dp))
-                FieldLabel("Expiry date (optional)")
-                Surface(onClick = onExpiryDateClick, shape = RoundedCornerShape(14.dp), color = Color.White,
-                    border = androidx.compose.foundation.BorderStroke(1.dp, PantryColors.Border)) {
-                    Row(Modifier.fillMaxWidth().heightIn(min = 56.dp).padding(horizontal = 16.dp),
-                        verticalAlignment = Alignment.CenterVertically) {
-                        Text(expiryDate, Modifier.weight(1f), fontSize = 15.sp)
-                        Icon(PantryIcons.Calendar, "Choose expiry date", Modifier.size(22.dp), tint = PantryColors.Green)
+                Column(Modifier.weight(1f, fill = false).verticalScroll(rememberScrollState())
+                    .padding(bottom = 16.dp)) {
+                    Text("Keep your pantry details up to date.", fontSize = 13.sp, color = PantryColors.Muted)
+                    Spacer(Modifier.height(22.dp))
+                    InventoryDestinationCard(destinationName, destinationHousehold, emptyList(), {}, {}, readOnly = true)
+                    saveError?.let { Text(it, color = MaterialTheme.colorScheme.error) }
+                    Spacer(Modifier.height(16.dp))
+                    FormField("Item name", name, onNameChange, error = nameError)
+                    Spacer(Modifier.height(16.dp))
+                    InventoryCategorySelector(category, onCategorySelected)
+                    Spacer(Modifier.height(16.dp))
+                    Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                        FormField("Quantity", quantity, onQuantityChange, Modifier.weight(1f), KeyboardType.Decimal)
+                        FormDropdown("Unit", unit, InventoryUnits.OPTIONS, onUnitSelected, Modifier.weight(1f), !saving)
                     }
+                    Text(InventoryUnits.preview(quantity, unit), Modifier.padding(top = 8.dp), fontSize = 12.sp, color = PantryColors.Muted)
+                    Spacer(Modifier.height(16.dp))
+                    FormField("Total price (RM)", price, onPriceChange, keyboardType = KeyboardType.Decimal)
+                    Spacer(Modifier.height(16.dp))
+                    FieldLabel("Expiry date (optional)")
+                    Surface(onClick = onExpiryDateClick, shape = RoundedCornerShape(14.dp), color = Color.White,
+                        border = androidx.compose.foundation.BorderStroke(1.dp, PantryColors.Border)) {
+                        Row(Modifier.fillMaxWidth().heightIn(min = 56.dp).padding(horizontal = 16.dp),
+                            verticalAlignment = Alignment.CenterVertically) {
+                            Text(expiryDate, Modifier.weight(1f), fontSize = 15.sp)
+                            Icon(PantryIcons.Calendar, "Choose expiry date", Modifier.size(22.dp), tint = PantryColors.Green)
+                        }
+                    }
+                    Spacer(Modifier.height(16.dp))
+                    FormDropdown("Storage", storageLocation, InventoryUnits.STORAGE, onStorageSelected, enabled = !saving)
+                    Spacer(Modifier.height(16.dp))
+                    FormField(InventoryUnits.thresholdLabel(unit), threshold, onThresholdChange, keyboardType = KeyboardType.Number)
                 }
-                Spacer(Modifier.height(16.dp))
-                FormDropdown("Storage", storageLocation, InventoryUnits.STORAGE, onStorageSelected, enabled = !saving)
-                Spacer(Modifier.height(16.dp))
-                FormField(InventoryUnits.thresholdLabel(unit), threshold, onThresholdChange, keyboardType = KeyboardType.Number)
-                Spacer(Modifier.height(24.dp))
-                Button(onClick = onSaveItem, enabled = destinationReady && !saving, modifier = Modifier.fillMaxWidth()) {
-                    Text(if (saving) "Saving…" else "Save changes")
+                Column(Modifier.fillMaxWidth().padding(top = 8.dp, bottom = 16.dp)) {
+                    Button(onClick = onSaveItem, enabled = destinationReady && !saving, modifier = Modifier.fillMaxWidth()) {
+                        Text(if (saving) "Saving…" else "Save changes")
+                    }
+                    Spacer(Modifier.height(10.dp))
+                    FeatureAction("Cancel", onBack, color = PantryColors.Pastel, contentColor = PantryColors.Green)
                 }
-                Spacer(Modifier.height(10.dp))
-                FeatureAction("Cancel", onBack, color = PantryColors.Pastel, contentColor = PantryColors.Green)
             }
         }
     }

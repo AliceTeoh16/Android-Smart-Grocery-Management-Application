@@ -1,5 +1,6 @@
 package com.xmum.smartgrocery.ui.quickadd
 
+import com.xmum.smartgrocery.ui.common.configureFormScrolling
 import com.xmum.smartgrocery.data.session.withInventoryDestination
 import android.app.DatePickerDialog
 import android.os.Bundle
@@ -234,11 +235,10 @@ class QuickAddBottomSheetDialog : BottomSheetDialogFragment() {
 
     override fun onStart() {
         super.onStart()
-        if (isEditMode()) {
+        if (showsDialog) {
             dialog?.findViewById<View>(com.google.android.material.R.id.design_bottom_sheet)?.let { sheet ->
                 sheet.background = android.graphics.drawable.ColorDrawable(android.graphics.Color.TRANSPARENT)
-                com.google.android.material.bottomsheet.BottomSheetBehavior.from(sheet).state =
-                    com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_EXPANDED
+                com.google.android.material.bottomsheet.BottomSheetBehavior.from(sheet).configureFormScrolling()
             }
         }
     }

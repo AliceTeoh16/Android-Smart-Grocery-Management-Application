@@ -1,5 +1,6 @@
 package com.xmum.smartgrocery.ui.shopping
 
+import com.xmum.smartgrocery.ui.common.configureFormScrolling
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.launch
 import android.os.Bundle
@@ -104,7 +105,7 @@ class AddShoppingItemDialog : BottomSheetDialogFragment() {
         super.onStart()
         dialog?.findViewById<View>(com.google.android.material.R.id.design_bottom_sheet)?.let { sheet ->
             sheet.background = android.graphics.drawable.ColorDrawable(android.graphics.Color.TRANSPARENT)
-            BottomSheetBehavior.from(sheet).state = BottomSheetBehavior.STATE_EXPANDED
+            BottomSheetBehavior.from(sheet).configureFormScrolling()
         }
     }
 

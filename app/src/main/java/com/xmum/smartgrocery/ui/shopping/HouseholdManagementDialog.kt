@@ -67,7 +67,7 @@ class HouseholdManagementSheet : BottomSheetDialogFragment() {
                 LaunchedEffect(busy) {
                     isCancelable = !busy
                     dialog?.findViewById<View>(com.google.android.material.R.id.design_bottom_sheet)?.let {
-                        BottomSheetBehavior.from(it).isDraggable = !busy
+                        BottomSheetBehavior.from(it).isDraggable = false
                     }
                 }
                 PantryPalTheme {

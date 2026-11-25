@@ -1,5 +1,6 @@
 package com.xmum.smartgrocery.ui.recipes
 
+import com.xmum.smartgrocery.ui.common.configureFormScrolling
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -71,7 +72,7 @@ class RecipeDeductionBottomSheet : BottomSheetDialogFragment() {
         super.onStart()
         dialog?.findViewById<View>(com.google.android.material.R.id.design_bottom_sheet)?.let { sheet ->
             sheet.background = android.graphics.drawable.ColorDrawable(android.graphics.Color.TRANSPARENT)
-            BottomSheetBehavior.from(sheet).state = BottomSheetBehavior.STATE_EXPANDED
+            BottomSheetBehavior.from(sheet).configureFormScrolling()
         }
     }
 

@@ -1,5 +1,6 @@
 package com.xmum.smartgrocery.ui.shopping
 
+import com.xmum.smartgrocery.ui.common.configureFormScrolling
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.view.View
@@ -10,8 +11,5 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 internal fun styleHouseholdInvitationDialog(dialog: BottomSheetDialog) {
     dialog.findViewById<View>(com.google.android.material.R.id.design_bottom_sheet)?.background =
         ColorDrawable(Color.TRANSPARENT)
-    dialog.behavior.apply {
-        skipCollapsed = true
-        state = BottomSheetBehavior.STATE_EXPANDED
-    }
+    dialog.behavior.configureFormScrolling()
 }
