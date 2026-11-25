@@ -1,5 +1,6 @@
 package com.xmum.smartgrocery.ui.quickadd
 
+import com.xmum.smartgrocery.data.session.withInventoryDestination
 import android.app.DatePickerDialog
 import android.os.Bundle
 import android.text.Editable
@@ -283,8 +284,8 @@ class QuickAddBottomSheetDialog : BottomSheetDialogFragment() {
         }
 
         selectedExpiryTimestamp = ExpiryEstimator.estimateExpiryTimestamp(
-            itemName = binding.editItemName.text?.toString(),
-            category = binding.spinnerCategory.text?.toString()
+            binding.editItemName.text?.toString(),
+            binding.spinnerCategory.text?.toString()
         )
         binding.editExpiryDate.setText(DateUtils.formatDate(selectedExpiryTimestamp))
     }

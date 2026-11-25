@@ -25,3 +25,5 @@ google-services.json
 captures/
 externalNativeBuild/
 
+backend/sharing/data/
+*.pid

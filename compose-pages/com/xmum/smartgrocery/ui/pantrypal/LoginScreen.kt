@@ -24,7 +24,6 @@ fun LoginScreen(
     onLogin: suspend (email: String, password: String) -> AuthResult,
     modifier: Modifier = Modifier,
     initialEmail: String = "",
-    onConfigureSharing: () -> Unit = {},
 ) {
     var email by rememberSaveable { mutableStateOf(initialEmail) }
     // Passwords are deliberately not persisted into saved instance state.
@@ -69,7 +68,6 @@ fun LoginScreen(
         FormMessage(if (attempted) validation ?: submission.error else null)
         PrimaryCta("Log in", submit, loading = submission.loading)
         AccountPrompt(stringResource(R.string.new_to_app, stringResource(R.string.app_name)), "Sign up", onNavigateToSignUp)
-        TextButton(onClick = onConfigureSharing) { Text("Sharing server") }
         Spacer(Modifier.height(32.dp))
         Spacer(Modifier.weight(1f))
         InfoCard(PantryIcons.People, "One shared pantry. Fewer “did we buy\nmilk?” moments.")

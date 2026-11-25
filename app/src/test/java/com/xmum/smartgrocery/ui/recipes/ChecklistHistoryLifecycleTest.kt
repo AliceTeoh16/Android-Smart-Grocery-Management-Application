@@ -1,6 +1,6 @@
 package com.xmum.smartgrocery.ui.recipes
 
-import com.xmum.smartgrocery.data.local.dao.ChecklistHistoryDao
+import com.xmum.smartgrocery.data.local.dao.ChecklistHistoryStore
 import com.xmum.smartgrocery.data.local.entity.ChecklistHistoryItem
 import com.xmum.smartgrocery.data.local.entity.GroceryItem
 import com.xmum.smartgrocery.data.repository.ChecklistHistoryRepository
@@ -17,10 +17,7 @@ import org.junit.Test
 
 class ChecklistHistoryLifecycleTest {
 
-    private class FakeChecklistHistoryDao : ChecklistHistoryDao() {
-        override suspend fun activeScope() = com.xmum.smartgrocery.data.local.dao.DataScope("test-user", null)
-        override suspend fun insertRaw(item: ChecklistHistoryItem) = insert(item)
-        override suspend fun updateRaw(item: ChecklistHistoryItem) = update(item)
+    private class FakeChecklistHistoryDao : ChecklistHistoryStore {
         val items = mutableListOf<ChecklistHistoryItem>()
 
         override fun getAllChecklistHistory(): Flow<List<ChecklistHistoryItem>> {
@@ -35,11 +32,11 @@ class ChecklistHistoryLifecycleTest {
             return items.firstOrNull { it.id == id }
         }
 
-        override suspend fun getCount(): Int {
+        fun getCount(): Int {
             return items.size
         }
 
-        override suspend fun insert(item: ChecklistHistoryItem) {
+        private fun insert(item: ChecklistHistoryItem) {
             val index = items.indexOfFirst { it.id == item.id }
             if (index >= 0) {
                 items[index] = item
@@ -52,6 +49,11 @@ class ChecklistHistoryLifecycleTest {
             val keep = items.sortedWith(compareByDescending<ChecklistHistoryItem> { it.createdAt }.thenByDescending { it.id }).take(maxLimit).map { it.id }.toSet()
             items.removeAll { it.id !in keep }
         }
+
+        override suspend fun saveWithPruning(item: ChecklistHistoryItem, maxLimit: Int) {
+            insert(item)
+            pruneToLatest(maxLimit.coerceIn(1, 10))
+        }
         override suspend fun updateState(id: String, stateJson: String, addedShoppingKeysJson: String, status: String?) {
             val old = items.firstOrNull { it.id == id } ?: return
             insert(old.copy(stateJson = stateJson, addedShoppingKeysJson = addedShoppingKeysJson, status = status ?: old.status))
@@ -59,10 +61,6 @@ class ChecklistHistoryLifecycleTest {
         override suspend fun backfillState(id: String, stateJson: String) {
             val old = items.firstOrNull { it.id == id && it.stateJson.isBlank() } ?: return
             insert(old.copy(stateJson = stateJson))
-        }
-
-        override suspend fun update(item: ChecklistHistoryItem) {
-            insert(item)
         }
 
         override suspend fun updateStatus(id: String, status: String) {
@@ -75,11 +73,6 @@ class ChecklistHistoryLifecycleTest {
             val existing = items.firstOrNull { it.id == id } ?: return
             val index = items.indexOf(existing)
             items[index] = existing.copy(addedShoppingKeysJson = addedShoppingKeysJson)
-        }
-
-        override suspend fun deleteOldest(count: Int) {
-            val oldest = items.sortedBy { it.createdAt }.take(count)
-            items.removeAll(oldest)
         }
 
         override suspend fun deleteById(id: String) {
@@ -103,7 +96,7 @@ class ChecklistHistoryLifecycleTest {
                 status = "pending",
                 createdAt = 1000L * i
             )
-            repository.saveChecklistWithPruning(item, maxLimit = 10)
+            repository.saveChecklistWithPruning(item, 10)
         }
 
         assertEquals(10, dao.getCount())
@@ -117,7 +110,7 @@ class ChecklistHistoryLifecycleTest {
             status = "pending",
             createdAt = 1000L * 11
         )
-        repository.saveChecklistWithPruning(item11, maxLimit = 10)
+        repository.saveChecklistWithPruning(item11, 10)
 
         assertEquals(10, dao.getCount())
         assertNull("Oldest record item_1 should have been pruned", dao.getChecklistHistoryById("item_1"))

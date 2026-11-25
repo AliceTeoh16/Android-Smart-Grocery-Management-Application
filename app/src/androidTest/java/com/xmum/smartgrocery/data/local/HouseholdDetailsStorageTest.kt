@@ -1,5 +1,7 @@
 package com.xmum.smartgrocery.data.local
 
+import com.xmum.smartgrocery.data.local.dao.getBudgetForMonthSync
+import com.xmum.smartgrocery.data.local.dao.setBudget
 import android.content.Intent
 import android.database.sqlite.SQLiteDatabase
 import android.net.Uri

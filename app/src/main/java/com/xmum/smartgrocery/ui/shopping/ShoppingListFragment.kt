@@ -145,7 +145,7 @@ class ShoppingListFragment : Fragment() {
         val scope = rememberCoroutineScope()
         FeatureCard {
             Text(status.message)
-            TextButton(onClick = { SharingSetupDialog.show(this@ShoppingListFragment) }) { Text(if (status.connected) "Sharing server & account" else "Connect account") }
+            TextButton(onClick = { SharingSetupDialog.show(this@ShoppingListFragment) }) { Text(if (status.connected) "Reconnect account" else "Connect account") }
             if (status.connected && state.isOwner && state.householdId != null && state.sharingServer == null) {
                 TextButton(onClick = { scope.launch {
                     runCatching { runtime.service.publishHousehold(state.householdId) }.onFailure {

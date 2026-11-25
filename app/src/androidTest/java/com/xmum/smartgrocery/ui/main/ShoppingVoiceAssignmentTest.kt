@@ -7,6 +7,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import com.xmum.smartgrocery.data.local.entity.GroceryItem
 import com.xmum.smartgrocery.data.local.entity.ShoppingListItem
+import com.xmum.smartgrocery.data.session.SessionManager
 import com.xmum.smartgrocery.ui.pantrypal.PantryAction
 import com.xmum.smartgrocery.utils.VoiceParser
 import kotlinx.coroutines.async
@@ -29,13 +30,18 @@ class ShoppingVoiceAssignmentTest {
 
     @Test fun reviewAssignmentSurvivesEditAndRecreationAndOnlyConfirmationMerges(): Unit = runBlocking {
         database.clearAllTables()
-        dao.insertManual(egg("Me")); dao.insertManual(egg("Household", 4))
+        database.useTestAccount()
+        val manager = SessionManager(database)
+        dao.insertManual(egg("Me"))
+        val home = manager.createHousehold("Test pantry")
+        dao.insertManual(egg("Household", 4))
+        manager.selectHousehold(null)
         val scenario = ActivityScenario.launch(MainActivity::class.java)
         try {
             scenario.onActivity { it.openPantryAction(PantryAction.Shopping); it.editVoiceCommand("buy 2 eggs", true) }
             click("Review command"); waitFor("Who is this for?")
             click("Me only"); waitFor("Existing 1 + 2 = 3")
-            assertEquals(listOf(1, 4), rows().sortedBy { it.quantityNeeded }.map { it.quantityNeeded })
+            assertEquals(1, rows().single().quantityNeeded)
             scenario.recreate(); waitFor("Existing 1 + 2 = 3")
             scenario.onActivity {
                 assertEquals("Me", (it.supportFragmentManager.findFragmentByTag(VoiceCommandConfirmationDialog.TAG)
@@ -47,29 +53,35 @@ class ShoppingVoiceAssignmentTest {
             scenario.onActivity { it.editVoiceCommand("买两个鸡蛋", true, "Me") }
             click("Review command"); waitFor("Existing 1 + 2 = 3"); click("Confirm")
             eventually { runBlocking { rows().single { it.assignedTo == "Me" }.quantityNeeded == 3 } }
-            assertEquals(2, rows().size)
-            assertEquals(4, rows().single { it.assignedTo == "Household" }.quantityNeeded)
             assertEquals(3.5, rows().single { it.assignedTo == "Me" }.estimatedUnitPrice, 0.0)
+            manager.selectHousehold(home.householdId)
+            assertEquals(4, rows().single { it.assignedTo == "Household" }.quantityNeeded)
         } finally { scenario.close() }
     }
 
     @Test fun householdChoiceAppliesToEveryItemAndKeepsPrivateRowsSeparate(): Unit = runBlocking {
         database.clearAllTables()
-        dao.insertManual(egg("Me")); dao.insertManual(egg("Household"))
+        database.useTestAccount()
+        val manager = SessionManager(database)
+        dao.insertManual(egg("Me"))
+        manager.createHousehold("Test pantry")
+        dao.insertManual(egg("Household"))
         val scenario = ActivityScenario.launch(MainActivity::class.java)
         try {
             scenario.onActivity { it.openPantryAction(PantryAction.Shopping)
                 it.editVoiceCommand("Beli dua biji telur dan satu botol susu", true, "Me") }
             click("Review command"); click("Household"); waitFor("Existing 1 + 2 = 3")
             click("Confirm")
-            eventually { runBlocking { rows().size == 3 && rows().single { it.assignedTo == "Household" && it.itemName == "Eggs" }.quantityNeeded == 3 } }
-            assertEquals(1, rows().single { it.assignedTo == "Me" }.quantityNeeded)
+            eventually { runBlocking { rows().size == 2 && rows().single { it.assignedTo == "Household" && it.itemName == "Eggs" }.quantityNeeded == 3 } }
             assertEquals("Household", rows().single { it.itemName == "milk" }.assignedTo)
+            manager.selectHousehold(null)
+            assertEquals(1, rows().single { it.assignedTo == "Me" }.quantityNeeded)
         } finally { scenario.close() }
     }
 
     @Test fun repeatedAndConcurrentCommandsMergeAtomicallyAndOverflowRollsBack(): Unit = runBlocking {
         database.clearAllTables()
+        database.useTestAccount()
         val eggId = dao.insertManual(egg("Me"))
         (1..4).map { async { dao.addVoiceItems(VoiceParser.parseAll("buy 2 eggs"), "Me") } }.awaitAll()
         assertEquals(1, rows().size)

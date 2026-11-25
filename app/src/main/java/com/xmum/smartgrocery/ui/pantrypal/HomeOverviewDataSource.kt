@@ -10,6 +10,7 @@ import com.xmum.smartgrocery.ui.auth.LocalAuthProfile
 import com.xmum.smartgrocery.ui.auth.LocalAuthSession
 import com.xmum.smartgrocery.utils.DateUtils
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
@@ -19,7 +20,7 @@ import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 
-/** Read-only UI adapter over existing repository APIs. No ViewModel or Room changes are needed. */
+/** Read-only dashboard mapping, with one scoped activity query rather than one per item. */
 @OptIn(ExperimentalCoroutinesApi::class)
 internal class HomeOverviewDataSource(app: SmartGroceryApp, session: LocalAuthSession) {
     private val clock = flow {
@@ -29,14 +30,7 @@ internal class HomeOverviewDataSource(app: SmartGroceryApp, session: LocalAuthSe
         }
     }
     private val month = clock.map { DateUtils.getCurrentMonthYear() }.distinctUntilChanged()
-    private val inventoryLogs = app.groceryRepository.allGroceryItems
-        .map { items -> items.map { it.id }.sorted() }
-        .distinctUntilChanged()
-        .flatMapLatest { ids ->
-            // The existing repository exposes logs by item, so compose those read-only flows.
-            if (ids.isEmpty()) flowOf(emptyList())
-            else combine(ids.map(app.groceryRepository::getLogsForItem)) { logs -> logs.flatMap { it } }
-        }
+    private val inventoryLogs = app.groceryRepository.inventoryActivityLogs
     private val snapshot = combine(
         app.groceryRepository.allGroceryItems,
         inventoryLogs,
@@ -51,6 +45,8 @@ internal class HomeOverviewDataSource(app: SmartGroceryApp, session: LocalAuthSe
         snapshot, app.preferencesRepository.expiryWarningDays, session.profiles, clock,
     ) { data, warningDays, profile, now -> HomeOverviewMapper.map(data, profile, warningDays, now) }
         .combine(session.manager.context) { state, context -> state.copy(householdName = context?.name ?: "Personal (private)", memberCount = context?.memberCount ?: 0) }
+        .distinctUntilChanged()
+        .flowOn(Dispatchers.Default)
 }
 
 internal data class DashboardSnapshot(

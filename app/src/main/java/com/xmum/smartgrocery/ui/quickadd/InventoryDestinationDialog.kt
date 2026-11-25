@@ -54,8 +54,8 @@ class InventoryDestinationDialog : BottomSheetDialogFragment() {
                         InventoryDestinationCard(target?.householdId?.let { id -> homes.firstOrNull { it.householdId == id }?.name }
                             ?: "Personal (private)", household, homes.map { HouseholdContextOption(it.householdId, it.name) }, {
                             if (it && homes.isEmpty()) error = "Create or join a household before sharing inventory."
-                            else { target = target?.copy(householdId = if (it) homes.first().householdId else null); error = null }
-                        }, { target = target?.copy(householdId = it) }, enabled = target != null)
+                            else { target = target?.withHouseholdId(if (it) homes.first().householdId else null); error = null }
+                        }, { target = target?.withHouseholdId(it) }, enabled = target != null)
                         error?.let { Text(it, color = MaterialTheme.colorScheme.error) }
                         Button(onClick = {
                             target?.let { parentFragmentManager.setFragmentResult(RESULT,

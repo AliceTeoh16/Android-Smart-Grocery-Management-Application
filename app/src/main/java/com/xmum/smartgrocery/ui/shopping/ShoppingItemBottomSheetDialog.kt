@@ -90,11 +90,11 @@ class ShoppingItemBottomSheetDialog : BottomSheetDialogFragment() {
         binding.buttonSaveShopping.isEnabled = false
         lifecycleScope.launch {
             try { repository.addManualItem(
-                itemName = name,
-                category = category,
-                quantityNeeded = quantity,
-                estimatedUnitPrice = price,
-                assignedTo = assignee
+                name,
+                category,
+                quantity,
+                price,
+                assignee
             )
             Toast.makeText(requireContext(), "$name added to shopping list", Toast.LENGTH_SHORT).show()
             dismiss()

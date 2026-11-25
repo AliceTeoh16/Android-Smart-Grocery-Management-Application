@@ -74,12 +74,11 @@ internal object HouseholdInvitationDialog {
             EncodeHintType.MARGIN to 2
         )
         val bitMatrix = QRCodeWriter().encode(text, BarcodeFormat.QR_CODE, size, size, hints)
+        val pixels = IntArray(size * size) { index ->
+            if (bitMatrix[index % size, index / size]) Color.BLACK else Color.WHITE
+        }
         return Bitmap.createBitmap(size, size, Bitmap.Config.RGB_565).apply {
-            for (x in 0 until size) {
-                for (y in 0 until size) {
-                    setPixel(x, y, if (bitMatrix[x, y]) Color.BLACK else Color.WHITE)
-                }
-            }
+            setPixels(pixels, 0, size, 0, 0, size, size)
         }
     }
 

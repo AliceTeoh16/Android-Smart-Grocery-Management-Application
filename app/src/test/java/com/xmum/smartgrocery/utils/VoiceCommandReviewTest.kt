@@ -5,13 +5,13 @@ import org.junit.Test
 
 class VoiceCommandReviewTest {
     @Test fun inventoryNaturalDeduction() {
-        val review = VoiceCommandReview.prepare(listOf("I already use 1 egg"), shopping = false)
+        val review = VoiceCommandReview.prepare(listOf("I already use 1 egg"), false)
         assertTrue(review.canConfirm)
         assertEquals(listOf(VoiceCommand(VoiceAction.DEDUCT, 1, "egg")), review.commands)
     }
 
     @Test fun shoppingMultipleItemsAndPackaging() {
-        val review = VoiceCommandReview.prepare(listOf("buy 2 bottles of milk, 1 chicken wing"), shopping = true)
+        val review = VoiceCommandReview.prepare(listOf("buy 2 bottles of milk, 1 chicken wing"), true)
         assertTrue(review.canConfirm)
         assertEquals(listOf(VoiceCommand(VoiceAction.ADD, 2, "milk"),
             VoiceCommand(VoiceAction.ADD, 1, "chicken wing")), review.commands)

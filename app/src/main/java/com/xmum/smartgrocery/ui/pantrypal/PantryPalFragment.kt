@@ -58,7 +58,6 @@ class PantryPalFragment : Fragment() {
                         onSignUp = { name, email, password -> session.createAccount(name, email, password).toAuthResult() },
                         onSendResetLink = { AuthResult.Failure(LocalAuthSession.RESET_UNAVAILABLE) },
                         resetEmailAvailable = false,
-                        onConfigureSharing = { com.xmum.smartgrocery.ui.shopping.SharingSetupDialog.show(this@PantryPalFragment) },
                         onTermsOfService = { dialog = "terms" },
                         onPrivacyPolicy = { dialog = "privacy" },
                         onHomeAction = { action ->

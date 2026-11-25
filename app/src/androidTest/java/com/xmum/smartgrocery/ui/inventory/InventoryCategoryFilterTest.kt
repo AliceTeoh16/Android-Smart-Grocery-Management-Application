@@ -100,7 +100,7 @@ class InventoryCategoryFilterTest {
             category("Food & Beverage")
             expectItems("Tomato", "Milk", "Fish", "Bread", "Pasta", "Cumin", "Coffee", "Chips", "Frozen dumplings")
             click("Choose food subcategory")
-            for (label in FoodSubcategory.entries.map { it.label } + "All food subcategories") {
+            for (label in FoodSubcategory.values().map { it.label } + "All food subcategories") {
                 CategoryMenuTestSupport.reveal(instrumentation, "Filter food subcategory: $label")
                 waitFor { find { it.contentDescription?.toString() == "Filter food subcategory: $label" } != null }
             }

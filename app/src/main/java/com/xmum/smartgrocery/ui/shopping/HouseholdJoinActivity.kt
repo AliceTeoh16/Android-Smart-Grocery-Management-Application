@@ -21,6 +21,11 @@ class HouseholdJoinActivity : AppCompatActivity() {
         if (server != null && runtime != null && server != runtime.serverUrl.value) {
             val valid = runCatching { com.xmum.smartgrocery.data.sharing.SharingApi.normalizeUrl(server) }.getOrNull()
             if (valid == null) { Toast.makeText(this, "Invalid sharing server address.", Toast.LENGTH_LONG).show(); finish(); return }
+            if (com.xmum.smartgrocery.BuildConfig.MANAGED_SERVER) {
+                Toast.makeText(this, "This invitation uses a different ShelfWise address. Ask the household owner for a new invitation.", Toast.LENGTH_LONG).show()
+                finish()
+                return
+            }
             AlertDialog.Builder(this).setTitle("Use invitation's sharing server?")
                 .setMessage("This invitation uses $valid. Connect your account to this server in Share & Connect, then open the invitation again.")
                 .setPositiveButton("Use server") { _, _ -> runtime.configureServer(valid); openApp() }

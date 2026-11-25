@@ -14,28 +14,24 @@ import kotlinx.coroutines.launch
 
 internal object SharingSetupDialog {
     fun show(owner: Fragment) = with(owner) {
-        val runtime = SharingRuntime.forDatabase((requireActivity().application as SmartGroceryApp).database) ?: return
+        SharingRuntime.forDatabase((requireActivity().application as SmartGroceryApp).database) ?: return
         val auth = LocalAuthSession(requireContext())
         val profile = auth.currentProfile()
-        val server = EditText(requireContext()).apply { hint = "Sharing server address"; setText(runtime.serverUrl.value); setSingleLine() }
+        if (!profile.signedIn) return
         val password = EditText(requireContext()).apply {
             hint = "Account password to connect"; setSingleLine(); isSaveEnabled = false
             inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
         }
         val fields = LinearLayout(requireContext()).apply {
             orientation = LinearLayout.VERTICAL; setPadding(40, 8, 40, 0)
-            addView(server); if (profile.signedIn) addView(password)
+            addView(password)
         }
-        val dialog = AlertDialog.Builder(requireContext()).setTitle("Household sharing")
-            .setMessage(if (profile.signedIn) "Connect ${profile.email}. Use the same sharing server on every device. Personal items stay on this device."
-                else "Use the same sharing server address on every device, then sign in or create an account.")
-            .setView(fields).setPositiveButton(if (profile.signedIn) "Connect" else "Save server", null)
+        val dialog = AlertDialog.Builder(requireContext()).setTitle("Connect account")
+            .setMessage("Connect ${profile.email} to sync household changes. Personal items stay on this device.")
+            .setView(fields).setPositiveButton("Connect", null)
             .setNegativeButton("Cancel", null).create()
         dialog.setOnShowListener {
             dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener {
-                val validation = runCatching { runtime.configureServer(server.text.toString()) }
-                if (validation.isFailure) { server.error = validation.exceptionOrNull()?.message; return@setOnClickListener }
-                if (!profile.signedIn) { dialog.dismiss(); return@setOnClickListener }
                 if (password.text.isNullOrEmpty()) { password.error = "Enter your account password."; return@setOnClickListener }
                 dialog.getButton(AlertDialog.BUTTON_POSITIVE).isEnabled = false
                 viewLifecycleOwner.lifecycleScope.launch {

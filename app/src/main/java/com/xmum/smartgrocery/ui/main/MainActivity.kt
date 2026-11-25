@@ -1,5 +1,6 @@
 package com.xmum.smartgrocery.ui.main
 
+import com.xmum.smartgrocery.data.session.withInventoryDestination
 import android.Manifest
 import android.animation.ObjectAnimator
 import android.content.Intent

@@ -1,10 +1,12 @@
 package com.xmum.smartgrocery.ui.recipes
 
+import com.xmum.smartgrocery.data.local.dao.setBudget
 import android.content.Context
 import android.view.accessibility.AccessibilityNodeInfo
 import androidx.lifecycle.ViewModelProvider
 import androidx.test.core.app.ActivityScenario
 import androidx.test.platform.app.InstrumentationRegistry
+import com.xmum.smartgrocery.data.local.useTestAccount
 import com.google.gson.Gson
 import com.xmum.smartgrocery.data.local.entity.GroceryItem
 import com.xmum.smartgrocery.data.local.entity.ShoppingListItem
@@ -13,6 +15,7 @@ import com.xmum.smartgrocery.data.network.AiApiService
 import com.xmum.smartgrocery.data.network.dto.RecipeRequest
 import com.xmum.smartgrocery.data.network.dto.RecipeResponse
 import com.xmum.smartgrocery.data.repository.RecipeRepository
+import com.xmum.smartgrocery.data.session.SessionManager
 import com.xmum.smartgrocery.ui.main.MainActivity
 import com.xmum.smartgrocery.ui.main.VoiceCommandTestRunner
 import com.xmum.smartgrocery.ui.pantrypal.PantryAction
@@ -44,6 +47,7 @@ class ChecklistHistoryRestoreUiTest {
         val originalSearch = searches.getString("search_history", null)
         try {
             database.clearAllTables()
+            database.useTestAccount()
             assertTrue(prefs.edit().clear().putBoolean("room_history_snapshot_migrated", true).commit())
             test()
         } finally {
@@ -287,12 +291,14 @@ class ChecklistHistoryRestoreUiTest {
         click("Add Selected (1) to Shopping List"); click("Personal Shopping List")
         eventually { runBlocking { database.shoppingListDao().getShoppingListItems().first().single().quantityLabel=="600 g" } && !state().isAddingToShopping }
         click("Select Noodles"); click("Add Selected (1) to Shopping List"); click("Household / Shared Shopping List")
-        eventually { runBlocking { database.shoppingListDao().getShoppingListItems().first().size==2 } && !state().isAddingToShopping }
-        val rows=database.shoppingListDao().getShoppingListItems().first()
-        assertEquals("600 g",rows.single { it.assignedTo=="Me" }.quantityLabel)
-        assertEquals("200 g",rows.single { it.assignedTo=="Household" }.quantityLabel)
+        eventually { runBlocking { database.shoppingListDao().getShoppingListItems().first().singleOrNull()?.assignedTo == "Household" } && !state().isAddingToShopping }
+        assertEquals("200 g", database.shoppingListDao().getShoppingListItems().first().single().quantityLabel)
         assertTrue(state().selectableMissingItems.single().isAddedToShopping)
         assertTrue(state().selectableMissingItems.single().isEditable)
+        SessionManager(database).selectHousehold(null)
+        val personal = database.shoppingListDao().getShoppingListItems().first().single()
+        assertEquals("Me", personal.assignedTo)
+        assertEquals("600 g", personal.quantityLabel)
         assertTrue(database.groceryDao().getAllItemsOnce().isEmpty())
         assertEquals(0,calls.get())
     }

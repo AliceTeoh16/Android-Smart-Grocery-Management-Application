@@ -39,7 +39,6 @@ fun AuthNavGraph(
     resetLinkExpiryMinutes: Int = 30,
     entry: PantryEntry = PantryEntry.Welcome,
     resetEmailAvailable: Boolean = true,
-    onConfigureSharing: () -> Unit = {},
 ) {
     val navigateToHome: () -> Unit = {
         navController.navigate(PantryRoutes.Home) {
@@ -86,7 +85,6 @@ fun AuthNavGraph(
                         onNavigateToForgotPassword = { navController.navigate(PantryRoutes.ForgotPassword) },
                         onNavigateToHome = navigateToHome,
                         onLogin = onLogin,
-                        onConfigureSharing = onConfigureSharing,
                     )
                 }
                 composable(PantryRoutes.SignUp) {
@@ -95,7 +93,6 @@ fun AuthNavGraph(
                         onNavigateToHome = navigateToHome,
                         onTermsOfService = onTermsOfService, onPrivacyPolicy = onPrivacyPolicy,
                         onSignUp = onSignUp,
-                        onConfigureSharing = onConfigureSharing,
                     )
                 }
                 composable(PantryRoutes.ForgotPassword) {
