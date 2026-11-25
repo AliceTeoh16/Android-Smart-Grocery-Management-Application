@@ -16,9 +16,9 @@ fun ShoppingListScreen(
     initials: String, householdName: String, householdVisible: Boolean, memberCount: Int,
     cartTotal: String, remainingBudget: String, budgetStatus: String,
     filterLabels: List<String>, selectedFilter: Int, summary: String, hasItems: Boolean,
-    canShare: Boolean, canClear: Boolean, onFilterSelected: (Int) -> Unit,
+    canClear: Boolean, onFilterSelected: (Int) -> Unit,
     onHome: () -> Unit, onProfile: () -> Unit, onHousehold: () -> Unit, onPurchaseHistory: () -> Unit,
-    onShareList: () -> Unit, onAddItem: () -> Unit, onVoice: () -> Unit, onClearChecked: () -> Unit,
+    onAddItem: () -> Unit, onVoice: () -> Unit, onClearChecked: () -> Unit,
     listContent: @Composable () -> Unit, modifier: Modifier = Modifier,
 ) {
     Box(modifier.fillMaxSize()) {
@@ -66,7 +66,6 @@ fun ShoppingListScreen(
             }
             Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
                 Text("To buy", Modifier.weight(1f), fontSize = 18.sp, fontWeight = FontWeight.Bold)
-                TextButton(onClick = onShareList, enabled = canShare) { Text("Share list ↗", fontSize = 12.sp) }
             }
             FeatureCard {
                 if (hasItems) listContent() else {

@@ -5,8 +5,6 @@ import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import android.content.res.ColorStateList
-import android.content.Intent
-import android.graphics.Bitmap
 import android.graphics.Color
 import android.graphics.Typeface
 import android.os.Bundle
@@ -52,7 +50,6 @@ import com.xmum.smartgrocery.R
 import com.xmum.smartgrocery.data.repository.AppPreferencesRepository
 import com.xmum.smartgrocery.data.local.entity.ShoppingListItem
 import com.xmum.smartgrocery.databinding.FragmentShoppingListBinding
-import com.xmum.smartgrocery.databinding.DialogShoppingLinkQrBinding
 import com.xmum.smartgrocery.ui.auth.AuthBottomSheetDialog
 import kotlinx.coroutines.launch
 
@@ -174,13 +171,12 @@ class ShoppingListFragment : Fragment() {
             cartTotal = cart.substringAfter(": "), remainingBudget = remaining.substringAfter(": "), budgetStatus = status,
             filterLabels = listOf("Personal", "Household"), selectedFilter = displayedMemberFilter.ordinal,
             summary = summary, hasItems = binding.recyclerViewShoppingList.visibility == View.VISIBLE,
-            canShare = binding.buttonShareList.isEnabled, canClear = binding.buttonClearChecked.isEnabled,
+            canClear = binding.buttonClearChecked.isEnabled,
             onFilterSelected = { index -> viewModel.setMemberFilter(ShoppingMemberFilter.entries[index]) },
             onHome = { (activity as? MainActivity)?.showPantryFlow(PantryEntry.Home) },
             onPurchaseHistory = { (activity as? MainActivity)?.openPantryAction(PantryAction.PurchaseHistory) },
             onProfile = { if (profile.signedIn) (activity as? MainActivity)?.showProfileSettings() else (activity as? MainActivity)?.showAuthBottomSheet() },
             onHousehold = { binding.textHouseholdCount.performClick() },
-            onShareList = { binding.buttonShareList.performClick() },
             onAddItem = { binding.fabAddShoppingItem.performClick() },
             onVoice = { binding.fabVoiceShopping.performClick() },
             onClearChecked = { binding.buttonClearChecked.performClick() },
@@ -231,9 +227,6 @@ class ShoppingListFragment : Fragment() {
         }
         binding.buttonClearChecked.setOnClickListener {
             viewModel.clearCheckedItems()
-        }
-        binding.buttonShareList.setOnClickListener {
-            showShareOptions()
         }
         binding.fabVoiceShopping.setOnClickListener {
             (activity as? com.xmum.smartgrocery.ui.main.MainActivity)?.triggerVoiceInput()
@@ -316,7 +309,6 @@ class ShoppingListFragment : Fragment() {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.allShoppingListItems.collect { items ->
                     binding.buttonClearChecked.isEnabled = items.any { it.isChecked }
-                    binding.buttonShareList.isEnabled = items.any { !it.isChecked }
                     updateMemberCounts(items)
                 }
             }
@@ -487,38 +479,6 @@ class ShoppingListFragment : Fragment() {
         }
     }
 
-    private fun shareShoppingList() {
-        val shareIntent = Intent(Intent.ACTION_SEND).apply {
-            type = "text/plain"
-            putExtra(Intent.EXTRA_SUBJECT, "Smart Grocery Shopping List")
-            putExtra(Intent.EXTRA_TEXT, viewModel.buildShareText())
-        }
-        startActivity(Intent.createChooser(shareIntent, "Share shopping list"))
-    }
-
-    private fun showShareOptions() {
-        val options = arrayOf(
-            "Copy raw text list",
-            "Generate sharing link / QR",
-            "Share via WhatsApp or Messages",
-            "+ Invite members / family"
-        )
-
-        val dialog = AlertDialog.Builder(requireContext())
-            .setTitle("Share shopping list")
-            .setCustomTitle(layoutInflater.inflate(R.layout.dialog_shopping_share_header, null))
-            .setAdapter(ShoppingShareOptionsAdapter(requireContext(), options)) { _, which ->
-                when (which) {
-                    0 -> copyToClipboard("Shopping list", viewModel.buildShareText(), "Shopping list copied")
-                    1 -> showSharingLinkDialog()
-                    2 -> shareShoppingList()
-                    3 -> showInviteHousematesSheet()
-                }
-            }
-            .show()
-        styleShoppingShareDialog(dialog)
-    }
-
     private fun showHouseholdMembersDialog() {
         featureNavController?.navigate("shopping/household") { launchSingleTop = true }
     }
@@ -546,36 +506,6 @@ class ShoppingListFragment : Fragment() {
 
     private fun shareHouseholdInvite() {
         HouseholdInvitationDialog.share(this)
-    }
-
-    private fun showSharingLinkDialog() {
-        val link = buildShoppingShareLink()
-        val content = DialogShoppingLinkQrBinding.inflate(layoutInflater)
-        val qrImage = content.imageShoppingShareQr.apply {
-            setImageBitmap(createQrBitmap(link, dp(220)))
-            adjustViewBounds = true
-        }
-        val linkText = content.textShoppingShareLink.apply {
-            text = link
-        }
-
-        val dialog = AlertDialog.Builder(requireContext())
-            .setView(content.root)
-            .setPositiveButton("Copy Link") { _, _ ->
-                copyToClipboard("Shopping list link", link, "Sharing link copied")
-            }
-            .setNegativeButton("Close", null)
-            .show()
-        styleSharingLinkQrDialog(dialog, content)
-    }
-
-    private fun buildShoppingShareLink(): String {
-        val openCount = viewModel.allShoppingListItems.value.count { !it.isChecked }
-        return "smartgrocery://shopping-list/share?items=$openCount&created=${System.currentTimeMillis()}"
-    }
-
-    private fun createQrBitmap(text: String, size: Int): Bitmap {
-        return HouseholdInvitationDialog.createQrBitmap(text, size)
     }
 
     private fun copyToClipboard(label: String, text: String, toastMessage: String) {
