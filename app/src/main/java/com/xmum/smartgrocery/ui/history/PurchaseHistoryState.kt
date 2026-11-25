@@ -1,7 +1,7 @@
 package com.xmum.smartgrocery.ui.history
 
 data class PurchaseHistoryRecord(val id: Int, val name: String, val category: String, val quantity: Int,
-    val unitPrice: Double, val timestamp: Long) {
+    val unitPrice: Double, val timestamp: Long, val unit: String = "pcs") {
     val total: Double get() = quantity * unitPrice
 }
 

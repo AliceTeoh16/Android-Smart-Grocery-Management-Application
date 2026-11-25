@@ -29,6 +29,8 @@ import kotlinx.coroutines.launch
 import com.xmum.smartgrocery.utils.DateUtils
 import com.xmum.smartgrocery.utils.ExpiryEstimator
 import java.util.Calendar
+import java.util.Locale
+import com.xmum.smartgrocery.utils.InventoryUnits
 
 class QuickAddBottomSheetDialog : BottomSheetDialogFragment() {
 
@@ -40,6 +42,8 @@ class QuickAddBottomSheetDialog : BottomSheetDialogFragment() {
     private var saveError by mutableStateOf<String?>(null)
     private var saving by mutableStateOf(false)
     private var preferredHousehold: String? = null
+    private var selectedUnit by mutableStateOf("pcs")
+    private var selectedStorage by mutableStateOf("Not set")
     private val destinationName: String get() = destination?.householdId?.let { id ->
         households.firstOrNull { it.householdId == id }?.name ?: "Unavailable household"
     } ?: "Personal (private)"
@@ -62,6 +66,8 @@ class QuickAddBottomSheetDialog : BottomSheetDialogFragment() {
         private const val ARG_EDIT_EXPIRY = "edit_expiry"
         private const val ARG_EDIT_THRESHOLD = "edit_threshold"
         private const val ARG_EDIT_PURCHASED = "edit_purchased"
+        private const val ARG_UNIT = "inventory_unit"
+        private const val ARG_STORAGE = "inventory_storage"
         private const val STATE_DESTINATION_USER = "destination_user"
         private const val STATE_DESTINATION_HOME = "destination_home"
 
@@ -88,6 +94,8 @@ class QuickAddBottomSheetDialog : BottomSheetDialogFragment() {
                 putLong(ARG_EDIT_EXPIRY, item.expiryDate ?: 0L)
                 putInt(ARG_EDIT_THRESHOLD, item.threshold)
                 putLong(ARG_EDIT_PURCHASED, item.purchasedDate)
+                putString(ARG_UNIT, item.unit)
+                putString(ARG_STORAGE, item.storageLocation)
             }
             fragment.arguments = args
             return fragment
@@ -117,6 +125,8 @@ class QuickAddBottomSheetDialog : BottomSheetDialogFragment() {
 
         setupCategorySpinner()
         prefillData()
+        selectedUnit = savedInstanceState?.getString(ARG_UNIT) ?: arguments?.getString(ARG_UNIT) ?: "pcs"
+        selectedStorage = savedInstanceState?.getString(ARG_STORAGE) ?: arguments?.getString(ARG_STORAGE) ?: "Not set"
         setupDatePicker()
         setupListeners()
         setupExpiryEstimation()
@@ -180,6 +190,9 @@ class QuickAddBottomSheetDialog : BottomSheetDialogFragment() {
                         },
                         onHouseholdSelected = { id -> if (!saving) selectDestination(id) },
                         name = name, quantity = quantity, price = price, category = category,
+                        unit = selectedUnit, storageLocation = selectedStorage,
+                        onUnitSelected = { if (!saving) selectedUnit = it },
+                        onStorageSelected = { if (!saving) selectedStorage = it },
                         expiryDate = remember(expiryDate) {
                             DateUtils.formatDate(selectedExpiryTimestamp)
                         }, threshold = threshold,
@@ -295,7 +308,8 @@ class QuickAddBottomSheetDialog : BottomSheetDialogFragment() {
             binding.textSheetTitle.text = "Edit Item"
             binding.buttonSave.text = "Update"
             binding.buttonSave.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_edit_24, 0, 0, 0)
-            binding.editPrice.setText(String.format("%.2f", arguments?.getDouble(ARG_EDIT_PRICE) ?: 0.0))
+            binding.editPrice.setText(String.format(Locale.US, "%.2f",
+                (arguments?.getDouble(ARG_EDIT_PRICE) ?: 0.0) * (arguments?.getInt(ARG_PREFILLED_QTY) ?: 0)))
             binding.spinnerCategory.setText(arguments?.getString(ARG_EDIT_CATEGORY) ?: "Other", false)
             binding.editThreshold.setText((arguments?.getInt(ARG_EDIT_THRESHOLD) ?: 2).toString())
             selectedExpiryTimestamp = arguments?.getLong(ARG_EDIT_EXPIRY)?.takeIf { it > 0L }
@@ -339,9 +353,19 @@ class QuickAddBottomSheetDialog : BottomSheetDialogFragment() {
             return
         }
 
-        val qty = qtyStr?.toIntOrNull() ?: 1
-        val price = priceStr?.toDoubleOrNull() ?: 0.0
-        val threshold = thresholdStr?.toIntOrNull() ?: 2
+        val qty = try { InventoryUnits.stockQuantity(qtyStr.orEmpty(), selectedUnit, isEditMode()) }
+            catch (error: IllegalArgumentException) { saveError = error.message; return }
+        val totalPrice = priceStr?.toDoubleOrNull()
+        if (totalPrice == null || !totalPrice.isFinite() || totalPrice < 0.0) {
+            saveError = "Enter a valid non-negative total price."; return
+        }
+        if (qty == 0 && totalPrice > 0.0) { saveError = "A zero quantity must have a zero total price."; return }
+        val price = if (qty > 0) totalPrice / qty else 0.0
+        val threshold = thresholdStr?.toIntOrNull()
+        if (threshold == null || threshold < 0 || threshold > 2_000_000_000) {
+            saveError = "Enter a whole non-negative low-stock threshold."; return
+        }
+        val stockUnit = InventoryUnits.stockUnit(selectedUnit)
 
         val item = if (isEditMode()) {
             GroceryItem(
@@ -354,7 +378,8 @@ class QuickAddBottomSheetDialog : BottomSheetDialogFragment() {
                 category = category,
                 expiryDate = selectedExpiryTimestamp,
                 threshold = threshold,
-                purchasedDate = arguments?.getLong(ARG_EDIT_PURCHASED) ?: System.currentTimeMillis()
+                purchasedDate = arguments?.getLong(ARG_EDIT_PURCHASED) ?: System.currentTimeMillis(),
+                unit = stockUnit, storageLocation = selectedStorage,
             )
         } else {
             GroceryItem(
@@ -363,7 +388,8 @@ class QuickAddBottomSheetDialog : BottomSheetDialogFragment() {
                 price = price,
                 category = category,
                 expiryDate = selectedExpiryTimestamp,
-                threshold = threshold
+                threshold = threshold,
+                unit = stockUnit, storageLocation = selectedStorage,
             )
         }
         saving = true
@@ -401,6 +427,8 @@ class QuickAddBottomSheetDialog : BottomSheetDialogFragment() {
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
+        outState.putString(ARG_UNIT, selectedUnit)
+        outState.putString(ARG_STORAGE, selectedStorage)
         destination?.let {
             outState.putString(STATE_DESTINATION_USER, it.userId)
             outState.putString(STATE_DESTINATION_HOME, it.householdId)

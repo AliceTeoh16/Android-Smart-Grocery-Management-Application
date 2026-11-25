@@ -4,6 +4,8 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
+import androidx.room.ColumnInfo
+import androidx.room.Ignore
 
 object InventoryChangeType {
     const val ADD = "ADD"
@@ -35,5 +37,12 @@ data class InventoryLog(
     val unitPriceAtChange: Double,
     val timestamp: Long = System.currentTimeMillis(),
     val userId: String = "",
-    val householdId: String? = null
-)
+    val householdId: String? = null,
+    @ColumnInfo(defaultValue = "'pcs'") val unit: String = "pcs"
+) {
+    @Ignore
+    constructor(legacyId: Int, legacyItemId: Int?, legacyName: String, legacyCategory: String,
+        legacyType: String, legacyAmount: Int, legacyPrice: Double, legacyTimestamp: Long,
+        legacyUser: String, legacyHousehold: String?) : this(legacyId, legacyItemId, legacyName,
+        legacyCategory, legacyType, legacyAmount, legacyPrice, legacyTimestamp, legacyUser, legacyHousehold, "pcs")
+}

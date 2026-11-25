@@ -146,9 +146,9 @@ class HouseholdDetailsStorageTest {
                 old.execSQL("INSERT INTO budget_entries VALUES ('2026-11', 600, 'alice', 'home', 'h:home')")
                 old.version = 10
             }
-            var db = Room.databaseBuilder(context, AppDatabase::class.java, name).addMigrations(AppDatabase.MIGRATION_10_11, AppDatabase.MIGRATION_11_12, AppDatabase.MIGRATION_12_13).build()
+            var db = Room.databaseBuilder(context, AppDatabase::class.java, name).addMigrations(AppDatabase.MIGRATION_10_11, AppDatabase.MIGRATION_11_12, AppDatabase.MIGRATION_12_13, AppDatabase.MIGRATION_13_14).build()
             database = db
-            assertEquals(13, db.openHelper.writableDatabase.version)
+            assertEquals(14, db.openHelper.writableDatabase.version)
             assertEquals("home", db.accountDao().session()!!.activeHouseholdId)
             val members = db.householdDao().observeMembers().first()
             assertEquals("Owner", members.single { it.userId == "alice" }.role)

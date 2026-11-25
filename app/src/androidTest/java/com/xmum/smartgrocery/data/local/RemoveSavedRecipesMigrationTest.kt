@@ -47,11 +47,11 @@ class RemoveSavedRecipesMigrationTest {
                 originalSchema = schema { sql -> old.rawQuery(sql, null) }
             }
             val database = Room.databaseBuilder(context, AppDatabase::class.java, name)
-                .addMigrations(AppDatabase.MIGRATION_6_7, AppDatabase.MIGRATION_7_8, AppDatabase.MIGRATION_8_9, AppDatabase.MIGRATION_9_10, AppDatabase.MIGRATION_10_11, AppDatabase.MIGRATION_11_12, AppDatabase.MIGRATION_12_13).build()
+                .addMigrations(AppDatabase.MIGRATION_6_7, AppDatabase.MIGRATION_7_8, AppDatabase.MIGRATION_8_9, AppDatabase.MIGRATION_9_10, AppDatabase.MIGRATION_10_11, AppDatabase.MIGRATION_11_12, AppDatabase.MIGRATION_12_13, AppDatabase.MIGRATION_13_14).build()
             migrated = database
             val sqlite = database.openHelper.writableDatabase
             database.inspectLegacyAccount() // Room validates the full current schema here.
-            assertEquals(13, sqlite.version)
+            assertEquals(14, sqlite.version)
             val expectedRows = originalRows.mapValues { (table, rows) -> rows.map { row ->
                 when (table) {
                     "grocery_items" -> row.toMutableList().apply { val leaf = this[4]; this[4] = "Food & Beverage"; add(leaf) }
@@ -65,7 +65,9 @@ class RemoveSavedRecipesMigrationTest {
                 when (table) {
                     "budget_entries" -> row + listOf("u:legacy-unclaimed", "legacy-unclaimed", null)
                     "checklist_history" -> row + "legacy-unclaimed"
-                    "grocery_items", "shopping_list_items" -> row + listOf("legacy-unclaimed", null) + List(4) { null }
+                    "grocery_items" -> row + listOf("legacy-unclaimed", null) + List(4) { null } + listOf("pcs", "Not set")
+                    "shopping_list_items" -> row + listOf("legacy-unclaimed", null) + List(4) { null }
+                    "inventory_logs" -> row + listOf("legacy-unclaimed", null, "pcs")
                     else -> row + listOf("legacy-unclaimed", null)
                 }
             } }
@@ -83,7 +85,7 @@ class RemoveSavedRecipesMigrationTest {
             database.close(); migrated = null
             // Reopening must pass Room's identity check too.
             migrated = Room.databaseBuilder(context, AppDatabase::class.java, name).build()
-            assertEquals(13, migrated.openHelper.writableDatabase.version)
+            assertEquals(14, migrated.openHelper.writableDatabase.version)
         } finally {
             migrated?.close()
             context.deleteDatabase(name)
@@ -94,7 +96,7 @@ class RemoveSavedRecipesMigrationTest {
         val database = Room.inMemoryDatabaseBuilder(context, AppDatabase::class.java).build()
         try {
             val sqlite = database.openHelper.writableDatabase
-            assertEquals(13, sqlite.version)
+            assertEquals(14, sqlite.version)
             sqlite.query("SELECT name FROM sqlite_master WHERE type = 'table' AND name NOT LIKE 'sqlite_%' AND name NOT IN ('room_master_table', 'android_metadata') ORDER BY name").use { cursor ->
                 val names = mutableListOf<String>()
                 while (cursor.moveToNext()) names += cursor.getString(0)

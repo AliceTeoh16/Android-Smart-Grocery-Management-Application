@@ -49,7 +49,7 @@ final class PurchaseHistoryMapper {
         List<PurchaseHistoryRecord> records = new ArrayList<>(filtered.size());
         for (InventoryLog log : filtered) {
             records.add(new PurchaseHistoryRecord(log.getId(), log.getItemName(), log.getCategory(),
-                    log.getAmountChanged(), log.getUnitPriceAtChange(), log.getTimestamp()));
+                    log.getAmountChanged(), log.getUnitPriceAtChange(), log.getTimestamp(), log.getUnit()));
         }
         return records;
     }

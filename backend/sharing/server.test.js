@@ -26,6 +26,34 @@ async function fixture(options) {
 const stock = quantity => ({ name: 'Eggs', quantity, price: 2, category: 'Food & Beverage', subcategory: 'Dairy', expiryDate: Date.now() + 86400000, threshold: 1, purchasedDate: Date.now() });
 const mutation = (device, collection, id, data, extra = {}) => ({ mutationId: `${device}:${collection}:${id}`, collection, id, data, baseVersion: 0, deleted: false, ...extra });
 
+test('inventory units and storage sync with purchase units and stay compatible with older clients', async () => {
+  const f = await fixture();
+  try {
+    const a = await f.register('unit-a@example.com'), b = await f.register('unit-b@example.com');
+    const home = (await f.call('/v1/households', a.token, { name: 'Unit home' })).data.household;
+    await f.call('/v1/households/join', b.token, { code: home.joinCode });
+    const url = `/v1/households/${home.id}/sync`;
+    const first = await f.call(url, a.token, { operations: [
+      mutation('unit', 'inventory', 'eggs', { ...stock(12), price: 10 / 12, unit: 'pcs', storageLocation: 'Fridge' }),
+      mutation('unit', 'logs', 'purchase', { itemId: 'eggs', itemName: 'Eggs', category: 'Food & Beverage',
+        changeType: 'ADD', amountChanged: 12, unitPriceAtChange: 10 / 12, timestamp: 1000, unit: 'pcs' })] });
+    assert.equal(first.status, 200);
+    const seen = (await f.call(url, b.token, { operations: [] })).data;
+    assert.equal(seen.records.find(r => r.id === 'eggs').data.storageLocation, 'Fridge');
+    assert.equal(seen.records.find(r => r.id === 'eggs').data.unit, 'pcs');
+    const purchase = seen.records.find(r => r.id === 'purchase').data;
+    assert.equal(purchase.unit, 'pcs'); assert.ok(Math.abs(purchase.amountChanged * purchase.unitPriceAtChange - 10) < 1e-8);
+    const legacy = await f.call(url, b.token, { operations: [mutation('legacy', 'inventory', 'eggs', { quantity: 11 }, { baseVersion: 1, quantityDelta: -1 })] });
+    const eggs = legacy.data.records.find(r => r.id === 'eggs').data;
+    assert.equal(eggs.quantity, 11); assert.equal(eggs.storageLocation, 'Fridge'); assert.equal(eggs.unit, 'pcs');
+    const oldCreate = await f.call(url, a.token, { operations: [mutation('old', 'inventory', 'legacy-item', stock(1))] });
+    assert.equal(oldCreate.status, 200);
+    const invalid = await f.call(url, b.token, { operations: [mutation('bad', 'inventory', 'eggs', { unit: 'password' }, { baseVersion: 2 })] });
+    assert.equal(invalid.status, 400);
+    assert.equal((await f.call('/health')).data.inventoryUnits, true);
+  } finally { await f.close(); }
+});
+
 test('central accounts normalize email, verify passwords, and revoke logged-out tokens', async () => {
   const f = await fixture();
   try {

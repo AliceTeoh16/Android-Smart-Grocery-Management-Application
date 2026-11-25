@@ -3,15 +3,21 @@ package com.xmum.smartgrocery.ui.quickadd
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Color
+import android.graphics.Rect
 import android.net.Uri
 import android.os.Bundle
+import android.os.SystemClock
 import android.util.Base64
+import android.view.InputDevice
+import android.view.MotionEvent
+import android.view.View
 import android.view.accessibility.AccessibilityNodeInfo
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.test.core.app.ActivityScenario
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.xmum.smartgrocery.data.local.useTestAccount
 import com.xmum.smartgrocery.databinding.BottomSheetQuickAddBinding
 import com.xmum.smartgrocery.ui.main.MainActivity
@@ -33,6 +39,65 @@ class IngredientScanFlowTest {
     private val instrumentation = InstrumentationRegistry.getInstrumentation()
     private val context = instrumentation.targetContext
     private val database get() = (instrumentation as VoiceCommandTestRunner).database
+
+    @Test fun reviewSwipesScrollItemsWithoutMovingTheSheet(): Unit = runBlocking {
+        database.clearAllTables()
+        database.useTestAccount()
+        val scenario = ActivityScenario.launch(MainActivity::class.java)
+        try {
+            openReview(scenario, (1..8).map { food("Cleaning cloth $it", 1, "Household Essentials") })
+            fun sheetBounds(): Rect {
+                val bounds = Rect()
+                scenario.onActivity { activity ->
+                    val fragment = allFragments(activity.supportFragmentManager.fragments)
+                        .filterIsInstance<IngredientScanBottomSheetDialog>().first()
+                    val sheet = fragment.dialog!!.findViewById<View>(com.google.android.material.R.id.design_bottom_sheet)!!
+                    assertEquals(BottomSheetBehavior.STATE_EXPANDED, BottomSheetBehavior.from(sheet).state)
+                    sheet.getGlobalVisibleRect(bounds)
+                }
+                return bounds
+            }
+            val original = sheetBounds()
+            val title = Rect().also { find(TITLE)!!.getBoundsInScreen(it) }
+            val footer = Rect().also { find("Add All to Inventory")!!.getBoundsInScreen(it) }
+            val contentTop = title.bottom + 40
+            val contentBottom = footer.top - 100
+            fun swipe(down: Boolean) {
+                val x = original.exactCenterX()
+                val start = contentTop + (contentBottom - contentTop) * if (down) 0.2f else 0.8f
+                val end = contentTop + (contentBottom - contentTop) * if (down) 0.8f else 0.2f
+                val started = SystemClock.uptimeMillis()
+                fun inject(action: Int, y: Float) {
+                    val event = MotionEvent.obtain(started, SystemClock.uptimeMillis(), action, x, y, 0)
+                    event.source = InputDevice.SOURCE_TOUCHSCREEN
+                    try { assertTrue(instrumentation.uiAutomation.injectInputEvent(event, true)) }
+                    finally { event.recycle() }
+                }
+                inject(MotionEvent.ACTION_DOWN, start)
+                for (step in 1..15) {
+                    SystemClock.sleep(16)
+                    inject(MotionEvent.ACTION_MOVE, start + (end - start) * step / 15)
+                }
+                inject(MotionEvent.ACTION_UP, end)
+                instrumentation.waitForIdleSync()
+                SystemClock.sleep(400)
+                assertEquals("Swiping the review content must not move the sheet", original, sheetBounds())
+                assertNotNull("The fixed save action must remain visible", find("Add All to Inventory"))
+            }
+            // A downward swipe at the top must not collapse or dismiss the review.
+            swipe(down = true)
+            var attempts = 0
+            while (find("Cleaning cloth 8")?.isVisibleToUser != true && attempts++ < 16) swipe(down = false)
+            assertTrue("Upward swipes must reveal the final item", find("Cleaning cloth 8")?.isVisibleToUser == true)
+            swipe(down = true)
+            assertTrue("Reviewing and scrolling must not save items", database.groceryDao().getAllItemsOnce().isEmpty())
+            scenario.recreate()
+            waitFor(TITLE)
+            swipe(down = true)
+            click("Cancel")
+            waitFor("Skip the typing")
+        } finally { scenario.close() }
+    }
 
     @Test fun unlistedProductsAndPersonalCareToolsKeepTheirCategoriesWhenReviewedAndSaved(): Unit = runBlocking {
         database.clearAllTables()

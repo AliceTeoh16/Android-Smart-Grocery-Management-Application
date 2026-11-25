@@ -36,11 +36,14 @@ class CrossDeviceSharingTest {
             a.groceryDao().insertWithLog(GroceryItem(name = "Alice private", quantity = 1, price = 1.0, category = "Dairy"))
             assertTrue(a.sharingDao().pending().first().isEmpty())
             val home = sa.createHousehold("Author family", "")
-            a.groceryDao().insertWithLog(GroceryItem(name = "Shared milk", quantity = 3, price = 2.0, category = "Dairy"))
+            a.groceryDao().insertWithLog(GroceryItem(name = "Shared milk", quantity = 3, price = 2.0, category = "Dairy",
+                unit = "bottles", storageLocation = "Fridge"))
             a.shoppingListDao().insertManual(ShoppingListItem(itemName = "Shared eggs", category = "Dairy", quantityNeeded = 2,
                 estimatedUnitPrice = 3.0, addedBy = "Manual", assignedTo = "Household"))
             sa.synchronize(); sb.joinHousehold(home.joinCode)
             val inventory = b.groceryDao().getAllItemsOnce().single()
+            assertEquals("bottles", inventory.unit); assertEquals("Fridge", inventory.storageLocation)
+            assertEquals("bottles", b.groceryDao().getPurchaseHistory().first().single().unit)
             val shopping = b.shoppingListDao().getShoppingListItems().first().single()
             assertEquals("Added by Alice", inventory.sharedChangeIndicator)
             assertEquals("Added by Alice", shopping.sharedChangeIndicator)
@@ -295,8 +298,8 @@ class CrossDeviceSharingTest {
                 old.execSQL("INSERT INTO grocery_items VALUES (7,'Private',2,3.0,'Food & Beverage',NULL,0,1000,'Pantry','u',NULL)")
                 old.version = 11
             }
-            val migrated = Room.databaseBuilder(context, AppDatabase::class.java, name).addMigrations(AppDatabase.MIGRATION_11_12, AppDatabase.MIGRATION_12_13).build(); db = migrated
-            assertEquals(13, migrated.openHelper.writableDatabase.version)
+            val migrated = Room.databaseBuilder(context, AppDatabase::class.java, name).addMigrations(AppDatabase.MIGRATION_11_12, AppDatabase.MIGRATION_12_13, AppDatabase.MIGRATION_13_14).build(); db = migrated
+            assertEquals(14, migrated.openHelper.writableDatabase.version)
             assertEquals("Private", migrated.groceryDao().getItemById(7)!!.name)
             migrated.groceryDao().updateQuantityWithLog(7, 3)
             assertTrue(migrated.sharingDao().pending().first().isEmpty())

@@ -1,5 +1,19 @@
 # Free online hosting: Render Free + Turso Free
 
+## Inventory unit and storage update
+
+The inventory form now saves units and physical storage locations. `1 dozen` is saved as `12 pcs`,
+`0.5 kg` as `500 g`, and `1.25 L` as `1250 ml`. A pack, bottle or carton remains a package count;
+the app does not guess its contents. The preview and low-stock label show the base unit before saving.
+Total purchase prices are divided across the saved base quantity so budgets and purchase history
+count the amount paid once. Units are also preserved in purchase history after item deletion.
+
+Room schema 14 adds default values for existing rows without deleting data or pending syncs.
+Update the sharing backend before distributing the 1.2 APK: Render's `/health` should report
+`inventoryUnits: true`. The optional metadata fields remain compatible with older clients.
+Personal unit/storage information follows the existing private scope and is not synchronized.
+AI prompts, settings, parsing, recognition and ingredient generation are unchanged.
+
 The default `render.yaml` now selects **Render Free**, with no paid disk. Turso Free stores the accounts and household database outside Render, so Render restarts or idle sleep do not erase it. Both providers have free-tier usage limits. Existing Gemini API usage and its provider quotas are unchanged.
 
 | Part | Where it runs |

@@ -40,10 +40,10 @@ class InventoryScopeMigrationTest {
                 old.version = 7
             }
             val migrated = Room.databaseBuilder(context, AppDatabase::class.java, name)
-                .addMigrations(AppDatabase.MIGRATION_7_8, AppDatabase.MIGRATION_8_9, AppDatabase.MIGRATION_9_10, AppDatabase.MIGRATION_10_11, AppDatabase.MIGRATION_11_12, AppDatabase.MIGRATION_12_13).build()
+                .addMigrations(AppDatabase.MIGRATION_7_8, AppDatabase.MIGRATION_8_9, AppDatabase.MIGRATION_9_10, AppDatabase.MIGRATION_10_11, AppDatabase.MIGRATION_11_12, AppDatabase.MIGRATION_12_13, AppDatabase.MIGRATION_13_14).build()
             database = migrated
             val sqlite = migrated.openHelper.writableDatabase // Validate the actual Room schema.
-            assertEquals(13, sqlite.version)
+            assertEquals(14, sqlite.version)
             migrated.inspectLegacyAccount()
             val dao = migrated.groceryDao()
             assertNull(dao.getItemById(41)!!.expiryDate)
@@ -89,7 +89,7 @@ class InventoryScopeMigrationTest {
             initial.close()
             val reopened = Room.databaseBuilder(context, AppDatabase::class.java, name).build()
             database = reopened
-            assertEquals(13, reopened.openHelper.writableDatabase.version)
+            assertEquals(14, reopened.openHelper.writableDatabase.version)
             for ((index, label) in labels.withIndex()) {
                 val item = reopened.groceryDao().getItemById(ids[index].toInt())!!
                 assertEquals("Food & Beverage", item.category)
