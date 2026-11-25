@@ -1,5 +1,6 @@
 package com.xmum.smartgrocery.ui.shopping
 
+import com.xmum.smartgrocery.ui.common.configureFormScrolling
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -60,7 +61,7 @@ class HouseholdContextSheet : BottomSheetDialogFragment() {
                 LaunchedEffect(busy) {
                     isCancelable = !busy
                     dialog?.findViewById<View>(com.google.android.material.R.id.design_bottom_sheet)?.let {
-                        BottomSheetBehavior.from(it).isDraggable = !busy
+                        BottomSheetBehavior.from(it).isDraggable = false
                     }
                 }
                 fun perform(action: suspend () -> Unit) {
@@ -111,10 +112,7 @@ class HouseholdContextSheet : BottomSheetDialogFragment() {
         super.onStart()
         dialog?.findViewById<View>(com.google.android.material.R.id.design_bottom_sheet)?.let {
             it.background = android.graphics.drawable.ColorDrawable(android.graphics.Color.TRANSPARENT)
-            BottomSheetBehavior.from(it).apply {
-                skipCollapsed = true
-                state = BottomSheetBehavior.STATE_EXPANDED
-            }
+            BottomSheetBehavior.from(it).configureFormScrolling()
         }
     }
 

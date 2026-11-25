@@ -1,5 +1,6 @@
 package com.xmum.smartgrocery.ui.main
 
+import com.xmum.smartgrocery.ui.common.configureFormScrolling
 import com.xmum.smartgrocery.data.session.withInventoryDestination
 import android.Manifest
 import android.animation.ObjectAnimator
@@ -870,7 +871,7 @@ class MainActivity : AppCompatActivity() {
         dialog.show()
         dialog.findViewById<View>(com.google.android.material.R.id.design_bottom_sheet)?.background =
             android.graphics.drawable.ColorDrawable(android.graphics.Color.TRANSPARENT)
-        dialog.behavior.state = com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_EXPANDED
+        dialog.behavior.configureFormScrolling()
     }
 
     private fun speechErrorName(error: Int): String {

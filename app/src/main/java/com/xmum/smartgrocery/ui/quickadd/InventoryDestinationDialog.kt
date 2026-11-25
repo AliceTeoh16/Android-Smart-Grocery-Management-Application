@@ -1,10 +1,13 @@
 package com.xmum.smartgrocery.ui.quickadd
 
+import com.xmum.smartgrocery.ui.common.configureFormScrolling
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -47,16 +50,20 @@ class InventoryDestinationDialog : BottomSheetDialogFragment() {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent { PantryPalTheme {
                 Surface(color = PantryColors.Cream) {
-                    Column(Modifier.fillMaxWidth().padding(24.dp).navigationBarsPadding()) {
+                    Column(Modifier.fillMaxWidth()
+                        .heightIn(max = androidx.compose.ui.platform.LocalConfiguration.current.screenHeightDp.dp * 0.9f)
+                        .imePadding().navigationBarsPadding().padding(24.dp)) {
                         Text("Voice inventory destination", style = MaterialTheme.typography.titleLarge)
                         Spacer(Modifier.height(16.dp))
-                        val household = target?.householdId != null
-                        InventoryDestinationCard(target?.householdId?.let { id -> homes.firstOrNull { it.householdId == id }?.name }
-                            ?: "Personal (private)", household, homes.map { HouseholdContextOption(it.householdId, it.name) }, {
-                            if (it && homes.isEmpty()) error = "Create or join a household before sharing inventory."
-                            else { target = target?.withHouseholdId(if (it) homes.first().householdId else null); error = null }
-                        }, { target = target?.withHouseholdId(it) }, enabled = target != null)
-                        error?.let { Text(it, color = MaterialTheme.colorScheme.error) }
+                        Column(Modifier.weight(1f, fill = false).verticalScroll(rememberScrollState())) {
+                            val household = target?.householdId != null
+                            InventoryDestinationCard(target?.householdId?.let { id -> homes.firstOrNull { it.householdId == id }?.name }
+                                ?: "Personal (private)", household, homes.map { HouseholdContextOption(it.householdId, it.name) }, {
+                                if (it && homes.isEmpty()) error = "Create or join a household before sharing inventory."
+                                else { target = target?.withHouseholdId(if (it) homes.first().householdId else null); error = null }
+                            }, { target = target?.withHouseholdId(it) }, enabled = target != null)
+                            error?.let { Text(it, color = MaterialTheme.colorScheme.error) }
+                        }
                         Button(onClick = {
                             target?.let { parentFragmentManager.setFragmentResult(RESULT,
                                 bundleOf("user" to it.userId, "home" to it.householdId)); dismiss() }
@@ -68,5 +75,9 @@ class InventoryDestinationDialog : BottomSheetDialogFragment() {
                 }
             } }
         }
+    override fun onStart() {
+        super.onStart()
+        (dialog as? com.google.android.material.bottomsheet.BottomSheetDialog)?.behavior?.configureFormScrolling()
+    }
     companion object { const val TAG = "inventory_destination"; const val RESULT = "voice_inventory_destination" }
 }

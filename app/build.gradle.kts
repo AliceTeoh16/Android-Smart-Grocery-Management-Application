@@ -17,8 +17,8 @@ android {
         applicationId = "com.xmum.smartgrocery"
         minSdk = 24
         targetSdk = 34
-        versionCode = 4
-        versionName = "1.2.1"
+        versionCode = 5
+        versionName = "1.2.2"
 
         testInstrumentationRunner = "com.xmum.smartgrocery.ui.main.VoiceCommandTestRunner"
         buildConfigField("String", "AI_BASE_URL", "\"${aiBaseUrl.get()}\"")

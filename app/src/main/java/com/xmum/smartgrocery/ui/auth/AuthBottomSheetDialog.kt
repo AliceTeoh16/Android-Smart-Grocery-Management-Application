@@ -1,5 +1,6 @@
 package com.xmum.smartgrocery.ui.auth
 
+import com.xmum.smartgrocery.ui.common.configureFormScrolling
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.launch
 import android.app.AlertDialog
@@ -45,7 +46,7 @@ class AuthBottomSheetDialog : BottomSheetDialogFragment() {
 
     override fun onStart() {
         super.onStart()
-        (dialog as? BottomSheetDialog)?.behavior?.state = BottomSheetBehavior.STATE_EXPANDED
+        (dialog as? BottomSheetDialog)?.behavior?.configureFormScrolling()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

@@ -33,9 +33,8 @@ fun AddShoppingItemSheet(
         shape = RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp)) {
         CompositionLocalProvider(LocalTextStyle provides MaterialTheme.typography.bodyMedium.copy(
             lineHeight = androidx.compose.ui.unit.TextUnit.Unspecified)) {
-            Column(Modifier.fillMaxWidth().heightIn(max = maxHeight).imePadding()
-                .verticalScroll(rememberScrollState()).padding(horizontal = 24.dp)
-                .padding(top = 12.dp, bottom = 100.dp)) {
+            Column(Modifier.fillMaxWidth().heightIn(max = maxHeight).imePadding().navigationBarsPadding()
+                .padding(horizontal = 24.dp).padding(top = 12.dp)) {
                 Box(Modifier.align(Alignment.CenterHorizontally).size(42.dp, 4.dp)
                     .background(PantryColors.Border, RoundedCornerShape(2.dp)))
                 Row(Modifier.fillMaxWidth().padding(top = 18.dp, bottom = 16.dp),
@@ -50,34 +49,38 @@ fun AddShoppingItemSheet(
                         Icon(PantryIcons.Close, "Cancel", Modifier.size(22.dp), tint = PantryColors.Muted)
                     }
                 }
-                Text("A little planning for your pantry.", color = PantryColors.Muted, fontSize = 13.sp)
-                Spacer(Modifier.height(22.dp))
-                ShoppingField("Item name", name, onNameChange, placeholder = "e.g. Noodles", error = nameError,
-                    keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Words))
-                Spacer(Modifier.height(16.dp))
-                InventoryCategorySelector(category, onCategorySelected)
-                Spacer(Modifier.height(16.dp))
-                Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                    ShoppingField("Quantity", quantity, onQuantityChange, Modifier.weight(1f),
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number))
-                    ShoppingField("Total price (RM)", price, onPriceChange, Modifier.weight(1f),
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal))
-                }
-                Text("Estimated total for the quantity above.", Modifier.padding(top = 8.dp), fontSize = 12.sp, color = PantryColors.Muted)
-                Spacer(Modifier.height(16.dp))
-                ShoppingDropdown("Assign to", assignee, assignees, onAssigneeSelected)
-                Spacer(Modifier.height(20.dp))
-                Surface(color = PantryColors.Pastel, shape = RoundedCornerShape(16.dp)) {
-                    Row(Modifier.fillMaxWidth().padding(14.dp), verticalAlignment = Alignment.CenterVertically) {
-                        Icon(PantryIcons.Basket, null, Modifier.size(21.dp), tint = PantryColors.Green)
-                        Text("Planned items count toward spending once purchased.", Modifier.padding(start = 12.dp),
-                            fontSize = 12.sp, color = PantryColors.Green)
+                Column(Modifier.weight(1f, fill = false).verticalScroll(rememberScrollState())
+                    .padding(bottom = 16.dp)) {
+                    Text("A little planning for your pantry.", color = PantryColors.Muted, fontSize = 13.sp)
+                    Spacer(Modifier.height(22.dp))
+                    ShoppingField("Item name", name, onNameChange, placeholder = "e.g. Noodles", error = nameError,
+                        keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Words))
+                    Spacer(Modifier.height(16.dp))
+                    InventoryCategorySelector(category, onCategorySelected)
+                    Spacer(Modifier.height(16.dp))
+                    Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                        ShoppingField("Quantity", quantity, onQuantityChange, Modifier.weight(1f),
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number))
+                        ShoppingField("Total price (RM)", price, onPriceChange, Modifier.weight(1f),
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal))
+                    }
+                    Text("Estimated total for the quantity above.", Modifier.padding(top = 8.dp), fontSize = 12.sp, color = PantryColors.Muted)
+                    Spacer(Modifier.height(16.dp))
+                    ShoppingDropdown("Assign to", assignee, assignees, onAssigneeSelected)
+                    Spacer(Modifier.height(20.dp))
+                    Surface(color = PantryColors.Pastel, shape = RoundedCornerShape(16.dp)) {
+                        Row(Modifier.fillMaxWidth().padding(14.dp), verticalAlignment = Alignment.CenterVertically) {
+                            Icon(PantryIcons.Basket, null, Modifier.size(21.dp), tint = PantryColors.Green)
+                            Text("Planned items count toward spending once purchased.", Modifier.padding(start = 12.dp),
+                                fontSize = 12.sp, color = PantryColors.Green)
+                        }
                     }
                 }
-                Spacer(Modifier.height(24.dp))
-                FeatureAction("Add item", onSave, icon = PantryIcons.Check)
-                Spacer(Modifier.height(10.dp))
-                FeatureAction("Cancel", onCancel, color = PantryColors.Pastel, contentColor = PantryColors.Green)
+                Column(Modifier.fillMaxWidth().padding(top = 8.dp, bottom = 16.dp)) {
+                    FeatureAction("Add item", onSave, icon = PantryIcons.Check)
+                    Spacer(Modifier.height(10.dp))
+                    FeatureAction("Cancel", onCancel, color = PantryColors.Pastel, contentColor = PantryColors.Green)
+                }
             }
         }
     }
