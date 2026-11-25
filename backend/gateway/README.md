@@ -11,3 +11,5 @@ Run `Allow-Phone-WiFi.bat` once to allow only Node's gateway port 8788 from the 
 After a successful build, open `http://<computer-ip>:8788/download/shelfwise.apk` in the phone's browser to download the latest APK. This fixed route serves only `build/phone-demo/ShelfWise-phone-debug.apk` and disables browser caching. Install it as an update to preserve local data.
 
 Run `node --test backend/gateway/server.test.js` from the project root. Tests use temporary in-memory household storage and local stub services; they do not invoke Gemini or modify real accounts.
+
+For free online hosting, see `../deploy/README.md`. The gateway adds `sharingStorage` to aggregate health so the APK build helper can confirm that household data uses Turso. AI capability fields and proxy payloads remain unchanged. Render Free does not provide durable APK file storage; distribute a cloud APK separately.

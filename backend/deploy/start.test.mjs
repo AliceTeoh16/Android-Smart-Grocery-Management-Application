@@ -8,11 +8,11 @@ import { DatabaseSync } from 'node:sqlite';
 import { configuration, importServer, launchServices } from './start.mjs';
 import { backupSharing } from './backup-sharing.mjs';
 
-function harness() {
+function harness(overrides = {}) {
   const processes = [], finishes = [];
   const environment = { PORT: '10000', SHARING_DATA_DIR: join(tmpdir(), 'shelfwise-test-data'),
     GEMINI_API_KEY: 'test-only-key', GEMINI_MODEL: 'existing-model', GEMINI_FALLBACK_MODELS: 'existing-fallbacks',
-    APK_PATH: join(tmpdir(), 'shelfwise-test.apk') };
+    APK_PATH: join(tmpdir(), 'shelfwise-test.apk'), ...overrides };
   const group = launchServices({ environment, finish: code => finishes.push(code), spawnChild: (binary, args, options) => {
     const child = new EventEmitter(); child.signals = [];
     child.kill = signal => { child.signals.push(signal); queueMicrotask(() => child.emit('exit', 0, signal)); };
@@ -49,6 +49,20 @@ test('persistent storage and port conflicts are validated before processes start
   assert.throws(() => configuration({ PORT: '8787', SHARING_DATA_DIR: tmpdir() }), /gateway port/);
   assert.throws(() => launchServices({ environment: { SHARING_DATA_DIR: tmpdir() } }), /GEMINI_API_KEY/);
   assert.throws(() => launchServices({ environment: { SHARING_DATA_DIR: tmpdir(), SHARING_IMPORT_MODE: 'true' } }), /Import mode/);
+});
+test('free hosting requires Turso credentials and never silently falls back to a local file', async () => {
+  assert.throws(() => configuration({ SHARING_STORAGE: 'turso' }), /TURSO_DATABASE_URL/);
+  assert.throws(() => configuration({ SHARING_STORAGE: 'turso', TURSO_DATABASE_URL: 'libsql://database.turso.io' }), /TURSO_AUTH_TOKEN/);
+  const environment = { SHARING_STORAGE: 'turso', TURSO_DATABASE_URL: 'libsql://database.turso.io',
+    TURSO_AUTH_TOKEN: 'test-only-token', SHARING_DATA_DIR: undefined };
+  assert.equal(configuration(environment).storageMode, 'turso');
+  const { group, processes, finishes } = harness(environment);
+  assert.equal(processes[1].options.env.SHARING_STORAGE, 'turso');
+  assert.equal(processes[1].options.env.TURSO_DATABASE_URL, environment.TURSO_DATABASE_URL);
+  assert.equal(processes[1].options.env.TURSO_AUTH_TOKEN, environment.TURSO_AUTH_TOKEN);
+  assert.equal(processes[0].options.env.GEMINI_MODEL, 'existing-model');
+  assert.equal(processes[0].options.env.GEMINI_FALLBACK_MODELS, 'existing-fallbacks');
+  group.stop(); await new Promise(resolve => setImmediate(resolve)); assert.deepEqual(finishes, [0]);
 });
 test('import mode exposes setup health and blocks application requests without opening a database', async () => {
   const server = importServer();

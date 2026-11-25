@@ -3,6 +3,7 @@ import http from 'node:http';
 import { mkdirSync } from 'node:fs';
 import { isAbsolute, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { validateTursoConfiguration } from '../sharing/storage.js';
 
 const backendRoot = fileURLToPath(new URL('../', import.meta.url));
 
@@ -11,10 +12,13 @@ export function configuration(environment) {
   if (!Number.isInteger(port) || port < 1 || port > 65535 || [8787, 8790].includes(port)) {
     throw new Error('PORT must be a valid public gateway port different from 8787 and 8790.');
   }
-  if (!environment.SHARING_DATA_DIR || !isAbsolute(environment.SHARING_DATA_DIR)) {
+  const storageMode = environment.SHARING_STORAGE || (environment.TURSO_DATABASE_URL || environment.TURSO_AUTH_TOKEN ? 'turso' : 'sqlite');
+  if (!['turso', 'sqlite'].includes(storageMode)) throw new Error('SHARING_STORAGE must be turso or sqlite.');
+  if (storageMode === 'turso') validateTursoConfiguration(environment.TURSO_DATABASE_URL, environment.TURSO_AUTH_TOKEN);
+  else if (!environment.SHARING_DATA_DIR || !isAbsolute(environment.SHARING_DATA_DIR)) {
     throw new Error('Set SHARING_DATA_DIR to an absolute directory on your persistent disk.');
   }
-  return { port, importing: environment.SHARING_IMPORT_MODE === 'true' };
+  return { port, importing: environment.SHARING_IMPORT_MODE === 'true', storageMode };
 }
 
 export function importServer() {
@@ -30,7 +34,7 @@ export function importServer() {
 /** Hosting supervisor only: the existing AI and household servers run as separate, unchanged processes. */
 export function launchServices({ environment = process.env, spawnChild = spawn, finish = code => process.exit(code),
   shutdownMs = 10_000 } = {}) {
-  const { port, importing } = configuration(environment);
+  const { port, importing, storageMode } = configuration(environment);
   if (importing) throw new Error('Import mode must use the maintenance server, without opening the database.');
   if (!environment.GEMINI_API_KEY) throw new Error('Set the existing GEMINI_API_KEY in the hosting environment.');
   const children = [];
@@ -53,7 +57,7 @@ export function launchServices({ environment = process.env, spawnChild = spawn, 
   const services = [
     { name: 'ai', script: 'server.js', directory: backendRoot, extra: { PORT: '8787' } },
     { name: 'sharing', script: 'server.js', directory: resolve(backendRoot, 'sharing'),
-      extra: { SHARING_PORT: '8790', SHARING_HOST: '127.0.0.1' } },
+      extra: { SHARING_PORT: '8790', SHARING_HOST: '127.0.0.1', SHARING_STORAGE: storageMode } },
     { name: 'gateway', script: 'server.js', directory: resolve(backendRoot, 'gateway'), extra: { PORT: String(port) } }
   ];
   try {
@@ -85,7 +89,7 @@ export function launchServices({ environment = process.env, spawnChild = spawn, 
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
   try {
     const config = configuration(process.env);
-    mkdirSync(process.env.SHARING_DATA_DIR, { recursive: true });
+    if (config.storageMode === 'sqlite') mkdirSync(process.env.SHARING_DATA_DIR, { recursive: true });
     if (config.importing) {
       const server = importServer();
       server.listen(config.port, '0.0.0.0', () => console.log('Database import mode: services are paused.'));

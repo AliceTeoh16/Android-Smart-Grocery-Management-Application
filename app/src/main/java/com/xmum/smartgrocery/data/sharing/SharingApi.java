@@ -30,16 +30,16 @@ public final class SharingApi {
     private static final MediaType JSON = MediaType.parse("application/json");
     private final String baseUrl;
     private final Gson gson = new GsonBuilder().serializeNulls().create();
-    private final OkHttpClient client = new OkHttpClient.Builder()
-            .connectTimeout(5, TimeUnit.SECONDS)
-            .readTimeout(30, TimeUnit.SECONDS)
-            .callTimeout(40, TimeUnit.SECONDS)
-            .followRedirects(false)
-            .followSslRedirects(false)
-            .build();
+    private final OkHttpClient client;
 
     public SharingApi(@NonNull String baseUrl) {
         this.baseUrl = baseUrl;
+        // A free HTTPS host can need about a minute to wake after being idle.
+        boolean hosted = "https".equals(URI.create(baseUrl).getScheme());
+        client = new OkHttpClient.Builder().connectTimeout(5, TimeUnit.SECONDS)
+                .readTimeout(hosted ? 90 : 30, TimeUnit.SECONDS)
+                .callTimeout(hosted ? 100 : 40, TimeUnit.SECONDS)
+                .followRedirects(false).followSslRedirects(false).build();
     }
 
     @NonNull

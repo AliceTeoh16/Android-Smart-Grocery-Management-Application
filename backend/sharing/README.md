@@ -46,3 +46,7 @@ node --test backend/sharing/server.test.js
 Android's `CrossDeviceSharingTest` uses two independent Room device databases against an isolated server on port 8791. Start that instance with a separate `SHARING_DATA_DIR` before running the test. It verifies joins, shared updates, private-data exclusion, ID mapping, concurrent quantity changes, spending history, persistent retry after a lost acknowledgement, and migration from Room v11.
 
 The app uses the configurable `SHARING_BASE_URL` Gradle property as its default server. This setting is separate from `AI_BASE_URL`; changing it does not change the AI backend address.
+
+## Free online hosting
+
+The default `render.yaml` now uses Render Free and an external Turso Free database. See `../deploy/README.md` for account setup, safe server database migration and APK configuration. Set `SHARING_STORAGE=turso`, `TURSO_DATABASE_URL` and `TURSO_AUTH_TOKEN` on the host. Missing hosted credentials fail closed; they never fall back to a temporary SQLite file. Local Wi-Fi testing still defaults to SQLite and does not need Turso credentials.
