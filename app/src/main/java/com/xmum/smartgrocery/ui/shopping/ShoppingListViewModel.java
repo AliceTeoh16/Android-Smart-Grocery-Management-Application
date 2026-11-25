@@ -210,7 +210,8 @@ public final class ShoppingListViewModel extends AndroidViewModel {
                                 price, inventory.getCategory(), inventory.getExpiryDate(), inventory.getThreshold(),
                                 inventory.getPurchasedDate(), inventory.getSubcategory(), inventory.getUserId(),
                                 inventory.getHouseholdId(), inventory.getAddedByName(), inventory.getLastModifiedByName(),
-                                inventory.getLastModifiedAction(), inventory.getLastModifiedAt());
+                                inventory.getLastModifiedAction(), inventory.getLastModifiedAt(),
+                                inventory.getUnit(), inventory.getStorageLocation());
                         return AndroidCoroutines.<Unit, Unit>then(write -> groceries.update(repriced, write),
                                 (unused, update) -> groceries.updateQuantity(inventory.getId(), total, update), next);
                     }

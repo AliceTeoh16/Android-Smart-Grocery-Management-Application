@@ -106,7 +106,7 @@ class SharedItemAttributionStorageTest {
                         legacy.execSQL("ALTER TABLE $table DROP COLUMN $column")
                 legacy.version = 12
             }
-            db = Room.databaseBuilder(context, AppDatabase::class.java, name).addMigrations(AppDatabase.MIGRATION_12_13).build()
+            db = Room.databaseBuilder(context, AppDatabase::class.java, name).addMigrations(AppDatabase.MIGRATION_12_13, AppDatabase.MIGRATION_13_14).build()
             assertEquals("Added by Alice", db.groceryDao().getItemById(sharedId)!!.sharedChangeIndicator)
             assertNull(db.groceryDao().getItemById(sharedId)!!.lastModifiedByName)
             assertEquals("Added by Alice", db.shoppingListDao().getById(listId)!!.sharedChangeIndicator)

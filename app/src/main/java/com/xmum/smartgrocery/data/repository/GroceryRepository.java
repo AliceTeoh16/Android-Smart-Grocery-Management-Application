@@ -111,6 +111,12 @@ public final class GroceryRepository {
     }
 
     @NonNull
+    public Object consumeCardQuantity(@NonNull String name, @NonNull String unit, @NonNull String storage,
+            int quantityUsed, @NonNull Continuation<? super Unit> continuation) {
+        return groceryDao.consumeCardQuantity(name, unit, storage, quantityUsed, continuation);
+    }
+
+    @NonNull
     public Object deleteExpiredItems(long today, @NonNull Continuation<? super Integer> continuation) {
         return groceryDao.deleteExpiredItems(today, continuation);
     }

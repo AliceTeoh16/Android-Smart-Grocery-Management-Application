@@ -42,7 +42,7 @@ import com.xmum.smartgrocery.data.sharing.SyncEntity;
                 LocalSessionEntity.class, HouseholdSettingEntity.class, CloudAccount.class, CloudUser.class,
                 CloudHousehold.class, SyncEntity.class, SyncControl.class, PendingOperation.class
         },
-        version = 13,
+        version = 14,
         exportSchema = false
 )
 public abstract class AppDatabase extends RoomDatabase {
@@ -81,7 +81,7 @@ public abstract class AppDatabase extends RoomDatabase {
                                 context.getApplicationContext(), AppDatabase.class, "smart_grocery_database")
                         .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5,
                                 MIGRATION_5_6, MIGRATION_6_7, MIGRATION_7_8, MIGRATION_8_9, MIGRATION_9_10,
-                                MIGRATION_10_11, MIGRATION_11_12, MIGRATION_12_13)
+                                MIGRATION_10_11, MIGRATION_11_12, MIGRATION_12_13, MIGRATION_13_14)
                         .addCallback(new RoomDatabase.Callback() {
                             @Override
                             public void onCreate(@NonNull SupportSQLiteDatabase db) {
@@ -260,6 +260,17 @@ public abstract class AppDatabase extends RoomDatabase {
     static final Migration MIGRATION_10_11 = HouseholdDetailsMigration.INSTANCE;
     static final Migration MIGRATION_11_12 = SharingSchema.MIGRATION_11_12;
     static final Migration MIGRATION_12_13 = SharedItemAttributionMigration.INSTANCE;
+
+    public static final Migration MIGRATION_13_14 = new Migration(13, 14) {
+        @Override public void migrate(@NonNull SupportSQLiteDatabase db) {
+            if (!hasColumn(db, "grocery_items", "unit"))
+                db.execSQL("ALTER TABLE grocery_items ADD COLUMN unit TEXT NOT NULL DEFAULT 'pcs'");
+            if (!hasColumn(db, "grocery_items", "storageLocation"))
+                db.execSQL("ALTER TABLE grocery_items ADD COLUMN storageLocation TEXT NOT NULL DEFAULT 'Not set'");
+            if (!hasColumn(db, "inventory_logs", "unit"))
+                db.execSQL("ALTER TABLE inventory_logs ADD COLUMN unit TEXT NOT NULL DEFAULT 'pcs'");
+        }
+    };
 
     private static boolean hasColumn(SupportSQLiteDatabase db, String tableName, String columnName) {
         try (Cursor cursor = db.query("PRAGMA table_info(`" + tableName + "`)")) {

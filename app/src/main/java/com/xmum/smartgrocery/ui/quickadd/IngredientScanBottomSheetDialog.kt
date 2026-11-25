@@ -74,7 +74,6 @@ class IngredientScanBottomSheetDialog : BottomSheetDialogFragment() {
                 val state by viewModel.state.collectAsStateWithLifecycle()
                 androidx.compose.runtime.SideEffect {
                     isCancelable = !state.saving
-                    (dialog as? com.google.android.material.bottomsheet.BottomSheetDialog)?.behavior?.isDraggable = !state.saving
                 }
                 LaunchedEffect(state.savedCount) {
                     if (state.savedCount > 0) viewLifecycleOwner.lifecycle.withResumed {
@@ -90,7 +89,6 @@ class IngredientScanBottomSheetDialog : BottomSheetDialogFragment() {
                         viewModel::select, viewModel::delete, ::chooseExpiry, viewModel::addManualItem, {
                             if (ready && viewModel.state.value.canSave) {
                                 isCancelable = false
-                                (dialog as? com.google.android.material.bottomsheet.BottomSheetDialog)?.behavior?.isDraggable = false
                                 viewModel.addAllToInventory(target)
                             }
                         }, destinationReady = ready, destinationContent = {
@@ -112,7 +110,12 @@ class IngredientScanBottomSheetDialog : BottomSheetDialogFragment() {
         super.onStart()
         dialog?.findViewById<View>(com.google.android.material.R.id.design_bottom_sheet)?.let { sheet ->
             sheet.background = android.graphics.drawable.ColorDrawable(android.graphics.Color.TRANSPARENT)
-            BottomSheetBehavior.from(sheet).state = BottomSheetBehavior.STATE_EXPANDED
+            BottomSheetBehavior.from(sheet).apply {
+                // Let the Compose review list own vertical swipes, including at its edges.
+                // The close button, Cancel and Back still dismiss the review normally.
+                isDraggable = false
+                state = BottomSheetBehavior.STATE_EXPANDED
+            }
         }
     }
 

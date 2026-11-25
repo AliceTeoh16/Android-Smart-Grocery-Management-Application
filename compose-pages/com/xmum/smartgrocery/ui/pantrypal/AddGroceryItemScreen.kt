@@ -18,6 +18,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.xmum.smartgrocery.utils.InventoryUnits
 
 /** Presentation only. Every editable value and action is supplied by the existing form host. */
 @Composable
@@ -34,12 +35,15 @@ fun AddGroceryItemScreen(
     destinationReady: Boolean = true, saving: Boolean = false, saveError: String? = null,
     householdOptions: List<HouseholdContextOption> = emptyList(),
     onDestinationSelected: (Boolean) -> Unit = {}, onHouseholdSelected: (String) -> Unit = {},
+    unit: String = "pcs", storageLocation: String = "Not set",
+    onUnitSelected: (String) -> Unit = {}, onStorageSelected: (String) -> Unit = {},
 ) {
     if (isEditMode) {
         EditGroceryItemSheet(
             name, quantity, price, category, expiryDate, threshold, categories,
             onNameChange, onQuantityChange, onPriceChange, onCategorySelected,
             onThresholdChange, onExpiryDateClick, onSaveItem, onBack, modifier, nameError, destinationName, destinationHousehold, destinationReady, saving, saveError,
+            unit, storageLocation, onUnitSelected, onStorageSelected,
         )
         return
     }
@@ -70,9 +74,10 @@ fun AddGroceryItemScreen(
             InventoryCategorySelector(category, onCategorySelected)
             Spacer(Modifier.height(12.dp))
             Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                FormField("Quantity", quantity, onQuantityChange, Modifier.weight(1f), KeyboardType.Number)
-                FormField("Unit", "pcs", {}, Modifier.weight(1f), enabled = false)
+                FormField("Quantity", quantity, onQuantityChange, Modifier.weight(1f), KeyboardType.Decimal)
+                FormDropdown("Unit", unit, InventoryUnits.OPTIONS, onUnitSelected, Modifier.weight(1f), !saving)
             }
+            Text(InventoryUnits.preview(quantity, unit), Modifier.padding(top = 8.dp), fontSize = 12.sp, color = PantryColors.Muted)
             Spacer(Modifier.height(12.dp))
             FormField("Total price (RM)", price, onPriceChange, keyboardType = KeyboardType.Decimal)
             Text("Only saved purchases count toward budget.", Modifier.padding(top = 8.dp),
@@ -90,15 +95,15 @@ fun AddGroceryItemScreen(
                         }
                     }
                 }
-                FormField("Storage", "Not set", {}, Modifier.weight(1f), enabled = false)
+                FormDropdown("Storage", storageLocation, InventoryUnits.STORAGE, onStorageSelected, Modifier.weight(1f), !saving)
             }
-            Text("Unit and storage options are not available yet.", Modifier.padding(top = 8.dp),
+            Text("Storage is where you keep this item. It does not change its expiry date.", Modifier.padding(top = 8.dp),
                 fontSize = 12.sp, color = PantryColors.Muted)
             var advanced by rememberSaveable { mutableStateOf(false) }
             TextButton(onClick = { advanced = !advanced }, contentPadding = PaddingValues(0.dp)) {
                 Text(if (advanced) "Hide low-stock setting" else "Low-stock setting", fontSize = 12.sp)
             }
-            if (advanced) FormField("Low-stock warning threshold", threshold, onThresholdChange, keyboardType = KeyboardType.Number)
+            if (advanced) FormField(InventoryUnits.thresholdLabel(unit), threshold, onThresholdChange, keyboardType = KeyboardType.Number)
             Spacer(Modifier.height(48.dp))
             Button(onClick = onSaveItem, enabled = destinationReady && !saving,
                 modifier = Modifier.fillMaxWidth().heightIn(min = 54.dp),
@@ -121,6 +126,7 @@ private fun EditGroceryItemSheet(
     onExpiryDateClick: () -> Unit, onSaveItem: () -> Unit, onBack: () -> Unit,
     modifier: Modifier, nameError: String?, destinationName: String, destinationHousehold: Boolean,
     destinationReady: Boolean, saving: Boolean, saveError: String?,
+    unit: String, storageLocation: String, onUnitSelected: (String) -> Unit, onStorageSelected: (String) -> Unit,
 ) {
     val maxHeight = LocalConfiguration.current.screenHeightDp.dp * 0.9f
     Surface(color = PantryColors.Cream, contentColor = PantryColors.Ink,
@@ -154,9 +160,12 @@ private fun EditGroceryItemSheet(
                 InventoryCategorySelector(category, onCategorySelected)
                 Spacer(Modifier.height(16.dp))
                 Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                    FormField("Quantity", quantity, onQuantityChange, Modifier.weight(1f), KeyboardType.Number)
-                    FormField("Total price (RM)", price, onPriceChange, Modifier.weight(1f), KeyboardType.Decimal)
+                    FormField("Quantity", quantity, onQuantityChange, Modifier.weight(1f), KeyboardType.Decimal)
+                    FormDropdown("Unit", unit, InventoryUnits.OPTIONS, onUnitSelected, Modifier.weight(1f), !saving)
                 }
+                Text(InventoryUnits.preview(quantity, unit), Modifier.padding(top = 8.dp), fontSize = 12.sp, color = PantryColors.Muted)
+                Spacer(Modifier.height(16.dp))
+                FormField("Total price (RM)", price, onPriceChange, keyboardType = KeyboardType.Decimal)
                 Spacer(Modifier.height(16.dp))
                 FieldLabel("Expiry date (optional)")
                 Surface(onClick = onExpiryDateClick, shape = RoundedCornerShape(14.dp), color = Color.White,
@@ -168,7 +177,9 @@ private fun EditGroceryItemSheet(
                     }
                 }
                 Spacer(Modifier.height(16.dp))
-                FormField("Low-stock warning threshold", threshold, onThresholdChange, keyboardType = KeyboardType.Number)
+                FormDropdown("Storage", storageLocation, InventoryUnits.STORAGE, onStorageSelected, enabled = !saving)
+                Spacer(Modifier.height(16.dp))
+                FormField(InventoryUnits.thresholdLabel(unit), threshold, onThresholdChange, keyboardType = KeyboardType.Number)
                 Spacer(Modifier.height(24.dp))
                 Button(onClick = onSaveItem, enabled = destinationReady && !saving, modifier = Modifier.fillMaxWidth()) {
                     Text(if (saving) "Saving…" else "Save changes")
@@ -208,19 +219,20 @@ private fun FormField(label: String, value: String, onValueChange: (String) -> U
 }
 
 @Composable
-private fun FormDropdown(label: String, value: String, options: List<String>, onSelect: (String) -> Unit) {
+private fun FormDropdown(label: String, value: String, options: List<String>, onSelect: (String) -> Unit,
+    modifier: Modifier = Modifier, enabled: Boolean = true) {
     var expanded by remember { mutableStateOf(false) }
-    Column {
+    Column(modifier) {
         FieldLabel(label)
         Box {
-            Surface(onClick = { expanded = true }, shape = RoundedCornerShape(14.dp), color = Color.White,
+            Surface(onClick = { expanded = true }, enabled = enabled, shape = RoundedCornerShape(14.dp), color = Color.White,
                 border = androidx.compose.foundation.BorderStroke(1.dp, PantryColors.Border)) {
                 Row(Modifier.fillMaxWidth().heightIn(min = 54.dp).padding(horizontal = 16.dp), verticalAlignment = Alignment.CenterVertically) {
                     Text(value, Modifier.weight(1f), fontSize = 15.sp)
                     Icon(PantryIcons.ChevronDown, "Choose $label", Modifier.size(22.dp), tint = PantryColors.Muted)
                 }
             }
-            DropdownMenu(expanded, { expanded = false }) {
+            DropdownMenu(expanded && enabled, { expanded = false }, modifier = Modifier.heightIn(max = 280.dp)) {
                 options.forEach { option ->
                     DropdownMenuItem(text = { Text(option) }, onClick = { onSelect(option); expanded = false })
                 }

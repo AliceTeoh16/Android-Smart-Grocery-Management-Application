@@ -399,6 +399,7 @@ public final class SharingEngine {
                 return i == null ? null : json("name", i.getName(), "quantity", i.getQuantity(), "price", i.getPrice(),
                         "category", i.getCategory(), "subcategory", i.getSubcategory(), "expiryDate", i.getExpiryDate(),
                         "threshold", i.getThreshold(), "purchasedDate", i.getPurchasedDate(),
+                        "unit", i.getUnit(), "storageLocation", i.getStorageLocation(),
                         "addedByName", i.getAddedByName(), "lastModifiedByName", i.getLastModifiedByName(),
                         "lastModifiedAction", i.getLastModifiedAction(), "lastModifiedAt", i.getLastModifiedAt());
             case "shopping":
@@ -415,7 +416,7 @@ public final class SharingEngine {
                 return log == null ? null : json("itemId", remoteInventoryRef(log.getItemId(), marks),
                         "itemName", log.getItemName(), "category", log.getCategory(), "changeType", log.getChangeType(),
                         "amountChanged", log.getAmountChanged(), "unitPriceAtChange", log.getUnitPriceAtChange(),
-                        "timestamp", log.getTimestamp());
+                        "timestamp", log.getTimestamp(), "unit", log.getUnit());
             case "budget":
                 BudgetEntry budget = dao.budgetNow(household, mark.getLocalKey());
                 return budget == null ? null : json("monthYear", budget.getMonthYear(), "limitAmount", budget.getLimitAmount());
@@ -447,7 +448,8 @@ public final class SharingEngine {
                         localInventoryRef(household, nullableString(data, "itemId"), marks),
                         string(data, "itemName"), string(data, "category"), string(data, "changeType"),
                         integer(data, "amountChanged"), data.get("unitPriceAtChange").getAsDouble(),
-                        data.get("timestamp").getAsLong(), owner, household)));
+                        data.get("timestamp").getAsLong(), owner, household,
+                        nullableString(data, "unit") == null ? "pcs" : string(data, "unit"))));
             case "budget":
                 BudgetEntry budget = new BudgetEntry(string(data, "monthYear"), data.get("limitAmount").getAsDouble(),
                         owner, household, "h:" + household);
@@ -484,7 +486,9 @@ public final class SharingEngine {
                 nullableLong(data, "expiryDate"), integer(data, "threshold"), data.get("purchasedDate").getAsLong(),
                 nullableString(data, "subcategory"), owner, household, nullableString(data, "addedByName"),
                 nullableString(data, "lastModifiedByName"), nullableString(data, "lastModifiedAction"),
-                nullableLong(data, "lastModifiedAt"));
+                nullableLong(data, "lastModifiedAt"),
+                nullableString(data, "unit") == null ? "pcs" : string(data, "unit"),
+                nullableString(data, "storageLocation") == null ? "Not set" : string(data, "storageLocation"));
         if (previous == null) {
             return Long.toString(dao.insertInventoryNow(value));
         }

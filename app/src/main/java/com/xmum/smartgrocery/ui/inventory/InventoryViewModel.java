@@ -133,8 +133,8 @@ public final class InventoryViewModel extends AndroidViewModel {
     }
 
     public void decrementQuantity(@NonNull InventoryCardItem card) {
-        AndroidCoroutines.<Unit>launch(scope,
-                next -> repository.consumeQuantityFefo(card.getItem().getName(), 1, next));
+        AndroidCoroutines.<Unit>launch(scope, next -> repository.consumeCardQuantity(card.getItem().getName(),
+                card.getItem().getUnit(), card.getItem().getStorageLocation(), 1, next));
     }
 
     public void deleteItem(@NonNull InventoryCardItem card) {
@@ -224,7 +224,8 @@ public final class InventoryViewModel extends AndroidViewModel {
     }
 
     private static String normalizedName(GroceryItem item) {
-        return StringsKt.trim(item.getName()).toString().toLowerCase(Locale.ROOT);
+        return StringsKt.trim(item.getName()).toString().toLowerCase(Locale.ROOT)
+                + "\0" + item.getUnit() + "\0" + item.getStorageLocation();
     }
 
     private static long sortableExpiry(Long date) {

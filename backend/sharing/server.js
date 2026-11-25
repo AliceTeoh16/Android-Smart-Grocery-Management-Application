@@ -19,15 +19,21 @@ const attributionFields = {
   lastModifiedAction: v => v === null || ['Added', 'Updated', 'Checked', 'Unchecked'].includes(v),
   lastModifiedAt: v => v === null || instant(v)
 };
+const stockUnits = new Set(['pcs', 'packs', 'bottles', 'cartons', 'cans', 'bags', 'boxes', 'bunches', 'pairs',
+  'g', 'mg', 'ml', 'cups', 'tbsp', 'tsp', 'cloves', 'slices', 'stalks']);
+const storageLocations = new Set(['Not set', 'Pantry', 'Fridge', 'Freezer', 'Cupboard', 'Counter', 'Other']);
+const optionalFields = new Set([...Object.keys(attributionFields), 'unit', 'storageLocation']);
 const fields = {
   inventory: { ...attributionFields, name: v => text(v) && v.trim(), quantity: v => integer(v) && v >= 0, price: v => finite(v) && v >= 0,
     category: v => text(v, 100), subcategory: v => v === null || text(v, 100), expiryDate: v => v === null || instant(v),
-    threshold: v => integer(v) && v >= 0, purchasedDate: instant },
+    threshold: v => integer(v) && v >= 0, purchasedDate: instant,
+    unit: v => stockUnits.has(v), storageLocation: v => storageLocations.has(v) },
   shopping: { ...attributionFields, itemName: v => text(v) && v.trim(), category: v => text(v, 100), subcategory: v => v === null || text(v, 100),
     quantityNeeded: v => integer(v) && v >= 0, quantityLabel: v => text(v, 100), estimatedUnitPrice: v => finite(v) && v >= 0,
     addedBy: v => text(v, 100), isChecked: v => typeof v === 'boolean', sourceId: v => v === null || id(v), createdAt: instant, updatedAt: instant },
   logs: { itemId: v => v === null || id(v), itemName: v => text(v), category: v => text(v, 100), changeType: v => ['ADD', 'DEDUCT', 'VOICE_DEDUCT', 'RECIPE_DEDUCT'].includes(v),
-    amountChanged: v => integer(v) && v >= 0, unitPriceAtChange: v => finite(v) && v >= 0, timestamp: instant },
+    amountChanged: v => integer(v) && v >= 0, unitPriceAtChange: v => finite(v) && v >= 0, timestamp: instant,
+    unit: v => stockUnits.has(v) },
   budget: { monthYear: v => /^\d{4}-(0[1-9]|1[0-2])$/.test(v), limitAmount: v => finite(v) && v >= 0 },
   household: { name: v => text(v, 100) && v.trim(), description: v => text(v, 1000) },
   settings: { expiryWarningDays: v => Number.isInteger(v) && v >= 1 && v <= 30 }
@@ -86,7 +92,7 @@ export function createSharingServer({ databasePath = ':memory:', now = Date.now,
   const validatePatch = (collection, patch, full) => {
     if (!patch || Array.isArray(patch) || typeof patch !== 'object') fail(400, 'INVALID_RECORD', 'Invalid shared record.');
     for (const [key, value] of Object.entries(patch)) if (!Object.hasOwn(fields[collection], key) || !fields[collection][key](value)) fail(400, 'INVALID_RECORD', `Invalid ${collection} field: ${key}.`);
-    if (full && Object.keys(fields[collection]).some(key => !Object.hasOwn(attributionFields, key) && !Object.hasOwn(patch, key))) fail(400, 'INVALID_RECORD', 'Shared record is incomplete.');
+    if (full && Object.keys(fields[collection]).some(key => !optionalFields.has(key) && !Object.hasOwn(patch, key))) fail(400, 'INVALID_RECORD', 'Shared record is incomplete.');
   };
   const handle = async req => {
     const url = new URL(req.url, 'http://sharing.local');
@@ -94,7 +100,7 @@ export function createSharingServer({ databasePath = ':memory:', now = Date.now,
     rate(`request:${ip}`, 600);
     if (path === '/health' && req.method === 'GET') {
       await one('SELECT 1 AS available');
-      return send(200, { service: 'household-sharing', version: 1, storage: store.kind });
+      return send(200, { service: 'household-sharing', version: 1, storage: store.kind, inventoryUnits: true });
     }
     if (path === '/v1/auth/register' && req.method === 'POST') {
       rate(`auth:${ip}`, 30);

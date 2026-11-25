@@ -94,7 +94,7 @@ private fun PurchaseHistoryCard(record: PurchaseHistoryRecord) {
                 .padding(horizontal = 8.dp, vertical = 4.dp), style = MaterialTheme.typography.labelSmall, color = PantryColors.Green)
             Text(record.name, Modifier.padding(top = 10.dp), style = MaterialTheme.typography.titleSmall)
             Row(Modifier.fillMaxWidth().padding(top = 8.dp), verticalAlignment = Alignment.CenterVertically) {
-                Text("${record.quantity} × ${money(record.unitPrice)}", Modifier.weight(1f),
+                Text("${record.quantity} ${record.unit} × ${money(record.unitPrice)}", Modifier.weight(1f),
                     style = MaterialTheme.typography.bodySmall, color = PantryColors.Muted)
                 Text(money(record.total), style = MaterialTheme.typography.labelLarge, color = PantryColors.Green)
             }

@@ -228,9 +228,9 @@ class AccountScopeStorageTest {
                 old.execSQL("INSERT INTO checklist_history VALUES ('old-1', 'Dinner', 2, 'pending', 1000, '[]', '[]', '[]', '{}')")
                 old.version = 9
             }
-            val migrated = Room.databaseBuilder(context, AppDatabase::class.java, name).addMigrations(AppDatabase.MIGRATION_9_10, AppDatabase.MIGRATION_10_11, AppDatabase.MIGRATION_11_12, AppDatabase.MIGRATION_12_13).build()
+            val migrated = Room.databaseBuilder(context, AppDatabase::class.java, name).addMigrations(AppDatabase.MIGRATION_9_10, AppDatabase.MIGRATION_10_11, AppDatabase.MIGRATION_11_12, AppDatabase.MIGRATION_12_13, AppDatabase.MIGRATION_13_14).build()
             db = migrated
-            assertEquals(13, migrated.openHelper.writableDatabase.version) // Runs Room's full schema validation.
+            assertEquals(14, migrated.openHelper.writableDatabase.version) // Runs Room's full schema validation.
             assertTrue(migrated.groceryDao().getAllItemsOnce().isEmpty())
             account(migrated, "new-user")
             assertTrue(migrated.groceryDao().getAllItemsOnce().isEmpty())

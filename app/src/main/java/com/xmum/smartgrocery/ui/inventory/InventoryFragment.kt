@@ -418,9 +418,10 @@ class InventoryFragment : Fragment() {
 
     private fun showBatchBreakdown(card: InventoryCardItem) {
         val message = buildString {
-            append("Total quantity: ${card.totalQuantity}\n\n")
+            append("Total quantity: ${card.totalQuantity} ${card.item.unit}\n")
+            append("Storage: ${card.item.storageLocation}\n\n")
             card.batches.forEachIndexed { index, batch ->
-                append("Batch ${index + 1}: ${batch.quantity} pcs, Exp ${com.xmum.smartgrocery.utils.DateUtils.formatDate(batch.expiryDate)}\n")
+                append("Batch ${index + 1}: ${batch.quantity} ${card.item.unit}, Exp ${com.xmum.smartgrocery.utils.DateUtils.formatDate(batch.expiryDate)}\n")
             }
         }
         AlertDialog.Builder(requireContext())

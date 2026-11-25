@@ -127,7 +127,7 @@ public abstract class GroceryDao extends ScopedDao {
         }
         return insertLogRaw(log.copy(log.getId(), log.getItemId(), log.getItemName(), log.getCategory(),
                 log.getChangeType(), log.getAmountChanged(), log.getUnitPriceAtChange(), log.getTimestamp(),
-                item.getUserId(), item.getHouseholdId()));
+                item.getUserId(), item.getHouseholdId(), log.getUnit()));
     }
 
     @Transaction
@@ -231,7 +231,7 @@ public abstract class GroceryDao extends ScopedDao {
 
     private void logChange(GroceryItem item, int id, String type, int amount, long timestamp) {
         addLog(new InventoryLog(0, id, item.getName(), GroceryCategories.mainCategory(item.getCategory()).getLabel(),
-                type, amount, item.getPrice(), timestamp, "", null));
+                type, amount, item.getPrice(), timestamp, "", null, item.getUnit()));
     }
 
     private static GroceryItem withAttribution(GroceryItem item, String userId, String householdId,
@@ -239,7 +239,7 @@ public abstract class GroceryDao extends ScopedDao {
         return item.copy(item.getId(), item.getName(), item.getQuantity(), item.getPrice(), item.getCategory(),
                 item.getExpiryDate(), item.getThreshold(), item.getPurchasedDate(), item.getSubcategory(),
                 userId, householdId, creator, actor, actor != null ? action : null,
-                actor != null ? System.currentTimeMillis() : null);
+                actor != null ? System.currentTimeMillis() : null, item.getUnit(), item.getStorageLocation());
     }
 
     @NonNull
@@ -347,6 +347,23 @@ public abstract class GroceryDao extends ScopedDao {
     public final Object consumeQuantityFefo(@NonNull String name, int quantityUsed,
             @NonNull Continuation<? super Unit> continuation) {
         return executeWrite(() -> consumeEarliestBatches(name, quantityUsed), continuation);
+    }
+
+    /** UI cards must never mix grams, pieces, packages, or storage locations. */
+    @NonNull
+    public final Object consumeCardQuantity(@NonNull String name, @NonNull String unit,
+            @NonNull String storage, int quantityUsed, @NonNull Continuation<? super Unit> continuation) {
+        return executeWrite(() -> {
+            int remaining = Math.max(quantityUsed, 0);
+            for (GroceryItem batch : readMatchingItems(name)) {
+                if (remaining == 0) break;
+                if (!batch.getName().trim().equalsIgnoreCase(name.trim()) || !batch.getUnit().equals(unit)
+                        || !batch.getStorageLocation().equals(storage)) continue;
+                int consumed = Math.min(Math.max(batch.getQuantity(), 0), remaining);
+                if (consumed > 0) writeQuantityWithLog(batch.getId(), batch.getQuantity() - consumed, null, System.currentTimeMillis());
+                remaining -= consumed;
+            }
+        }, continuation);
     }
 
     @NonNull

@@ -17,14 +17,14 @@
             android:maxWidth="160dp" android:maxLines="2" android:ellipsize="end" android:gravity="center" android:paddingHorizontal="10dp"
             android:textSize="10sp" android:textStyle="bold" android:textColor="#315B40" android:background="@drawable/pantry_inventory_quantity_bg" />
         <TextView android:id="@+id/text_item_meta" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="10dp"
-            android:maxLines="1" android:ellipsize="end" android:textColor="#315B40" android:textSize="14sp" android:textStyle="bold" />
+            android:maxLines="2" android:ellipsize="end" android:textColor="#315B40" android:textSize="14sp" android:textStyle="bold" />
         <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="12dp" android:gravity="center_vertical" android:orientation="horizontal">
-            <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Qty" android:textColor="#738075" android:textSize="10sp" />
+            <TextView android:id="@+id/text_quantity_unit" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Qty" android:textColor="#738075" android:textSize="10sp" />
             <LinearLayout android:id="@+id/layout_quantity_controls" android:layout_width="wrap_content" android:layout_height="40dp"
                 android:background="@drawable/pantry_inventory_quantity_bg" android:gravity="center" android:orientation="horizontal" android:paddingHorizontal="4dp">
                 <ImageButton android:id="@+id/button_decrement" android:layout_width="30dp" android:layout_height="32dp" android:padding="6dp"
                     android:background="?android:attr/selectableItemBackgroundBorderless" android:src="@drawable/ic_minus_24" android:contentDescription="Decrease quantity" app:tint="#315B40" />
-                <TextView android:id="@+id/text_quantity" android:layout_width="28dp" android:layout_height="wrap_content" android:gravity="center"
+                <TextView android:id="@+id/text_quantity" android:layout_width="wrap_content" android:minWidth="28dp" android:layout_height="wrap_content" android:gravity="center"
                     android:textColor="#315B40" android:textSize="14sp" android:textStyle="bold" />
                 <ImageButton android:id="@+id/button_increment" android:layout_width="30dp" android:layout_height="32dp" android:padding="7dp"
                     android:background="@drawable/pantry_inventory_increment_bg" android:src="@drawable/ic_plus_24" android:contentDescription="Increase quantity" app:tint="#FFFFFF" />

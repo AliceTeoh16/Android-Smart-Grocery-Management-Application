@@ -53,8 +53,8 @@ class ChecklistHistoryStorageTest {
                 old.execSQL("INSERT INTO inventory_logs VALUES (51, 41, 'Eggs', 'Food & Beverage', 'ADD', 3, 2.5, 1800000000000)")
                 old.version = 8
             }
-            val migrated = Room.databaseBuilder(context, AppDatabase::class.java, name).addMigrations(AppDatabase.MIGRATION_8_9, AppDatabase.MIGRATION_9_10, AppDatabase.MIGRATION_10_11, AppDatabase.MIGRATION_11_12, AppDatabase.MIGRATION_12_13).build(); db = migrated
-            assertEquals(13, migrated.openHelper.writableDatabase.version)
+            val migrated = Room.databaseBuilder(context, AppDatabase::class.java, name).addMigrations(AppDatabase.MIGRATION_8_9, AppDatabase.MIGRATION_9_10, AppDatabase.MIGRATION_10_11, AppDatabase.MIGRATION_11_12, AppDatabase.MIGRATION_12_13, AppDatabase.MIGRATION_13_14).build(); db = migrated
+            assertEquals(14, migrated.openHelper.writableDatabase.version)
             migrated.inspectLegacyAccount()
             assertEquals(listOf("old-2", "old-1"), migrated.checklistHistoryDao().getAllChecklistHistorySync().map { it.id })
             assertTrue(migrated.checklistHistoryDao().getAllChecklistHistorySync().all { it.stateJson.isEmpty() })
@@ -66,7 +66,7 @@ class ChecklistHistoryStorageTest {
             migrated.openHelper.readableDatabase.query("SELECT itemId FROM inventory_logs WHERE id=51").use { assertTrue(it.moveToFirst()); assertEquals(41,it.getInt(0)) }
             migrated.openHelper.readableDatabase.query("PRAGMA foreign_key_check").use { assertFalse(it.moveToFirst()) }
             migrated.close(); db = Room.databaseBuilder(context, AppDatabase::class.java, name).build()
-            assertEquals(13, db!!.openHelper.writableDatabase.version)
+            assertEquals(14, db!!.openHelper.writableDatabase.version)
         } finally { db?.close(); context.deleteDatabase(name) }
     }
 }
