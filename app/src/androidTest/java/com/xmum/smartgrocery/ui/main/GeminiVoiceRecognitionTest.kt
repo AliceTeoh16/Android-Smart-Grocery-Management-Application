@@ -6,6 +6,7 @@ import android.view.accessibility.AccessibilityNodeInfo
 import androidx.lifecycle.Lifecycle
 import androidx.test.core.app.ActivityScenario
 import androidx.test.platform.app.InstrumentationRegistry
+import com.xmum.smartgrocery.data.local.useTestAccount
 import com.xmum.smartgrocery.data.local.entity.GroceryItem
 import com.xmum.smartgrocery.ui.pantrypal.PantryAction
 import com.xmum.smartgrocery.utils.VoiceLanguage
@@ -38,6 +39,7 @@ class GeminiVoiceRecognitionTest {
     }
     private fun fixture(block: suspend (ActivityScenario<MainActivity>, Int, Int, MutableList<Capture>) -> Unit): Unit = runBlocking {
         database.clearAllTables()
+        database.useTestAccount()
         val eggs = database.groceryDao().insert(GroceryItem(name = "Eggs", quantity = 5, price = 2.0,
             category = "Other", threshold = 0, expiryDate = System.currentTimeMillis() + 864000000)).toInt()
         val milk = database.groceryDao().insert(GroceryItem(name = "Milk", quantity = 2, price = 3.0,
@@ -58,9 +60,12 @@ class GeminiVoiceRecognitionTest {
         scenario.onActivity {
             it.openPantryAction(if (shopping) PantryAction.Shopping else PantryAction.Inventory)
             it.triggerVoiceInput()
-            if (changeScreen) it.openPantryAction(if (shopping) PantryAction.Inventory else PantryAction.Shopping)
         }
+        if (!shopping) click("Continue with voice input")
         waitFor("Done speaking")
+        if (changeScreen) scenario.onActivity {
+            it.openPantryAction(if (shopping) PantryAction.Inventory else PantryAction.Shopping)
+        }
     }
 
     @Test fun englishChineseAndMalayReachReviewOnlyAndRememberTheirLanguage(): Unit = fixture { scenario, eggs, milk, _ ->
@@ -96,6 +101,7 @@ class GeminiVoiceRecognitionTest {
         listen(scenario, shopping = true, changeScreen = true)
         click("Done speaking"); waitFor("Add 2 × milk"); waitFor("Add 1 × chicken wing")
         assertTrue(database.shoppingListDao().getShoppingListItems().first().isEmpty())
+        click("Me only")
         click("Confirm")
         eventually { runBlocking { database.shoppingListDao().getShoppingListItems().first().size == 2 } }
         assertEquals(4, database.groceryDao().getItemById(milk)!!.quantity)
@@ -211,10 +217,11 @@ class GeminiVoiceRecognitionTest {
         waitFor(text)
     }
     private fun click(text: String) {
-        waitFor(text)
-        var node = find(text)!!
-        while (!node.isClickable && node.parent != null) node = node.parent
-        assertTrue(node.performAction(AccessibilityNodeInfo.ACTION_CLICK))
+        eventually {
+            var node = find(text) ?: return@eventually false
+            while (!node.isClickable) node = node.parent ?: return@eventually false
+            node.isEnabled && node.performAction(AccessibilityNodeInfo.ACTION_CLICK)
+        }
         instrumentation.waitForIdleSync()
     }
     private fun eventually(timeoutMs: Long = 12000, condition: () -> Boolean) {

@@ -31,7 +31,6 @@ fun SignUpScreen(
     modifier: Modifier = Modifier,
     initialName: String = "",
     initialEmail: String = "",
-    onConfigureSharing: () -> Unit = {},
 ) {
     var name by rememberSaveable { mutableStateOf(initialName) }
     var email by rememberSaveable { mutableStateOf(initialEmail) }
@@ -98,7 +97,6 @@ fun SignUpScreen(
         FormMessage(if (attempted) validation ?: submission.error else null)
         PrimaryCta("Create account", submit, enabled = agreed, loading = submission.loading)
         AccountPrompt("Already have an account?", "Log in", onNavigateToLogin)
-        TextButton(onClick = onConfigureSharing) { Text("Sharing server") }
         Spacer(Modifier.height(32.dp))
         Spacer(Modifier.weight(1f))
         Text("A little planning today. A little less waste tomorrow.",

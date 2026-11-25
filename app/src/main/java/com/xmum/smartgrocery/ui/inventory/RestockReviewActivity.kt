@@ -1,5 +1,6 @@
 package com.xmum.smartgrocery.ui.inventory
 
+import com.xmum.smartgrocery.data.session.withInventoryDestination
 import android.content.Context
 import android.content.Intent
 import android.net.Uri

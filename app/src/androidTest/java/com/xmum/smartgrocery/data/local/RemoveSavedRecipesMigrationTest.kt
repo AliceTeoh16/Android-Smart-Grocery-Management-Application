@@ -1,5 +1,6 @@
 package com.xmum.smartgrocery.data.local
 
+import com.xmum.smartgrocery.data.local.dao.getBudgetForMonthSync
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import androidx.room.Room
@@ -49,7 +50,7 @@ class RemoveSavedRecipesMigrationTest {
                 .addMigrations(AppDatabase.MIGRATION_6_7, AppDatabase.MIGRATION_7_8, AppDatabase.MIGRATION_8_9, AppDatabase.MIGRATION_9_10, AppDatabase.MIGRATION_10_11, AppDatabase.MIGRATION_11_12, AppDatabase.MIGRATION_12_13).build()
             migrated = database
             val sqlite = database.openHelper.writableDatabase
-            database.inspectLegacyAccount() // Room validates the complete v7 schema here.
+            database.inspectLegacyAccount() // Room validates the full current schema here.
             assertEquals(13, sqlite.version)
             val expectedRows = originalRows.mapValues { (table, rows) -> rows.map { row ->
                 when (table) {
@@ -64,6 +65,7 @@ class RemoveSavedRecipesMigrationTest {
                 when (table) {
                     "budget_entries" -> row + listOf("u:legacy-unclaimed", "legacy-unclaimed", null)
                     "checklist_history" -> row + "legacy-unclaimed"
+                    "grocery_items", "shopping_list_items" -> row + listOf("legacy-unclaimed", null) + List(4) { null }
                     else -> row + listOf("legacy-unclaimed", null)
                 }
             } }

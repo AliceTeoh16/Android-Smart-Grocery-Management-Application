@@ -1,5 +1,6 @@
 package com.xmum.smartgrocery.data.local
 
+import com.xmum.smartgrocery.data.session.withInventoryDestination
 import androidx.room.Room
 import androidx.test.platform.app.InstrumentationRegistry
 import com.xmum.smartgrocery.data.local.dao.DataScope

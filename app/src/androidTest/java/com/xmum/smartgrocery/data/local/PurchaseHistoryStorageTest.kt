@@ -27,8 +27,8 @@ class PurchaseHistoryStorageTest {
             val id = dao.insertWithLog(GroceryItem(name = "Milk", quantity = 2, price = 3.5,
                 category = "Dairy", purchasedDate = 1000)).toInt()
             dao.update(dao.getItemById(id)!!.copy(price = 4.0))
-            dao.updateQuantityWithLog(id, 3, timestamp = 2000)
-            dao.updateQuantityWithLog(id, 1, timestamp = 3000)
+            dao.updateQuantityWithLog(id, 3, null, 2000)
+            dao.updateQuantityWithLog(id, 1, null, 3000)
             dao.delete(dao.getItemById(id)!!)
             val records = dao.getPurchaseHistory().first()
             assertEquals(listOf(2000L, 1000L), records.map { it.timestamp })

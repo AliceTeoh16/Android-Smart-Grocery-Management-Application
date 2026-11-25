@@ -43,8 +43,8 @@ class InventoryScopeTest {
         assertEquals("Household Essentials", GroceryCategories.suggest("Toilet paper"))
         assertEquals("Produce", GroceryCategories.suggest("Tomato"))
         assertEquals("Spices", GroceryCategories.suggest("Cumin"))
-        assertEquals(3, Category.entries.map { it.background }.distinct().size)
-        assertEquals(3, Category.entries.map { it.foreground }.distinct().size)
+        assertEquals(3, Category.values().map { it.background }.distinct().size)
+        assertEquals(3, Category.values().map { it.foreground }.distinct().size)
         assertEquals(9, GroceryCategories.foodSubcategories.size)
     }
 

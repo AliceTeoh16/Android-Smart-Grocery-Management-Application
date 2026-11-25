@@ -12,6 +12,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.test.core.app.ActivityScenario
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
+import com.xmum.smartgrocery.data.local.useTestAccount
 import com.xmum.smartgrocery.databinding.BottomSheetQuickAddBinding
 import com.xmum.smartgrocery.ui.main.MainActivity
 import com.xmum.smartgrocery.ui.main.VoiceCommandTestRunner
@@ -35,6 +36,7 @@ class IngredientScanFlowTest {
 
     @Test fun unlistedProductsAndPersonalCareToolsKeepTheirCategoriesWhenReviewedAndSaved(): Unit = runBlocking {
         database.clearAllTables()
+        database.useTestAccount()
         val scenario = ActivityScenario.launch(MainActivity::class.java)
         val detections = listOf(
             VisualFoodItem("Kohlrabi", "Food & Beverage", 3, "Produce"),
@@ -63,6 +65,7 @@ class IngredientScanFlowTest {
 
     @Test fun teacupAndTeaReviewAsHouseholdAndBeverageWithCorrectDefaults(): Unit = runBlocking {
         database.clearAllTables()
+        database.useTestAccount()
         val scenario = ActivityScenario.launch(MainActivity::class.java)
         try {
             val model = openReview(scenario, listOf(
@@ -91,6 +94,7 @@ class IngredientScanFlowTest {
 
     @Test fun recognitionCorrectsStaleLabelsBeforeDefaultsAndPersistsEveryCategory(): Unit = runBlocking {
         database.clearAllTables()
+        database.useTestAccount()
         val expected = linkedMapOf("Tomato" to "Produce", "Salmon" to "Meat & Seafood", "Milk" to "Dairy",
             "Bread" to "Bakery", "Rice" to "Pantry", "Salt" to "Spices", "Orange juice" to "Beverages",
             "Cream crackers" to "Snacks & Sweets", "Frozen chicken" to "Frozen Foods",
@@ -124,6 +128,7 @@ class IngredientScanFlowTest {
 
     @Test fun singleFoodUsesBatchReviewAndManualItemsKeepReviewedExpiry(): Unit = runBlocking {
         database.clearAllTables()
+        database.useTestAccount()
         val scenario = ActivityScenario.launch(MainActivity::class.java)
         try {
             val model = openReview(scenario, listOf(food("Broccoli")))
@@ -169,6 +174,7 @@ class IngredientScanFlowTest {
 
     @Test fun fourVegetablesAppearAsFourCheckedFoods(): Unit = runBlocking {
         database.clearAllTables()
+        database.useTestAccount()
         val scenario = ActivityScenario.launch(MainActivity::class.java)
         try {
             val names = listOf("Onion", "Green Bell Pepper", "Tomato", "Potato")
@@ -200,15 +206,19 @@ class IngredientScanFlowTest {
 
     @Test fun editsSelectionDeletionRotationAndExplicitBatchSaveRefreshInventory(): Unit = runBlocking {
         database.clearAllTables()
+        database.useTestAccount()
         val scenario = ActivityScenario.launch(MainActivity::class.java)
         try {
             val model = openReview(scenario, listOf(food("Eggs", 12, "Dairy"), food("Milk", 2, "Dairy"),
                 food("Rice", 1, "Pantry"), food("Broccoli")))
             assertTrue("All visual detections start selected", model.state.value.items.all { it.selected })
             assertTrue(database.groceryDao().getAllItemsOnce().isEmpty())
-            click("Increase Eggs")
-            assertEquals(13, model.state.value.items.first().quantity)
-            click("Decrease Eggs")
+            scenario.onActivity {
+                val eggs = model.state.value.items.first()
+                model.adjustQuantity(eggs.id, 1)
+                assertEquals(13, model.state.value.items.first().quantity)
+                model.adjustQuantity(eggs.id, -1)
+            }
             click("Select Eggs")
             assertFalse(model.state.value.items.first().selected)
             eventually { find("Select Eggs")?.isChecked == false }
@@ -216,7 +226,7 @@ class IngredientScanFlowTest {
             eventually { model.state.value.items.first().selected && find("Select Eggs")?.isChecked == true }
             setText("Eggs", "Organic eggs")
             click("Choose Subcategory for Organic eggs")
-            click("Pantry")
+            click("Select Subcategory: Pantry")
             // Deletion and deselection use the same state callbacks as the corresponding row controls.
             scenario.onActivity {
                 model.delete(model.state.value.items.first { it.name == "Milk" }.id)
@@ -249,6 +259,7 @@ class IngredientScanFlowTest {
 
     @Test fun transactionFailureRollsBackEveryItemAndLogAndCanRetry(): Unit = runBlocking {
         database.clearAllTables()
+        database.useTestAccount()
         database.openHelper.writableDatabase.execSQL("CREATE TRIGGER reject_test_milk BEFORE INSERT ON grocery_items WHEN NEW.name = 'Milk' BEGIN SELECT RAISE(ABORT, 'test failure'); END")
         val scenario = ActivityScenario.launch(MainActivity::class.java)
         try {
@@ -272,6 +283,7 @@ class IngredientScanFlowTest {
 
     @Test fun emptyNamesNoSelectionDeleteAllAndCancellationNeverWriteInventory(): Unit = runBlocking {
         database.clearAllTables()
+        database.useTestAccount()
         val scenario = ActivityScenario.launch(MainActivity::class.java)
         try {
             val model = openReview(scenario, listOf(food("Milk", 2, "Dairy"), food("Rice", 1, "Pantry")))
@@ -297,13 +309,14 @@ class IngredientScanFlowTest {
 
     @Test fun emptyVisualResultsAndNetworkErrorsAllowManualBatchWithoutWrites(): Unit = runBlocking {
         database.clearAllTables()
+        database.useTestAccount()
         val scenario = ActivityScenario.launch(MainActivity::class.java)
         try {
             openPicker(scenario)
             lateinit var model: IngredientScanViewModel
             scenario.onActivity { activity ->
                 model = scanModel(activity)
-                model.recognizeFood = { emptyList() }
+                model.setFoodRecognizer { emptyList() }
                 model.scan(Uri.EMPTY)
             }
             eventually { !model.state.value.scanning && model.state.value.error != null }
@@ -311,7 +324,7 @@ class IngredientScanFlowTest {
             assertTrue(model.state.value.items.isEmpty())
             waitFor(TITLE)
             scenario.onActivity {
-                model.recognizeFood = { throw java.io.IOException("offline") }
+                model.setFoodRecognizer { throw java.io.IOException("offline") }
                 model.scan(Uri.EMPTY)
             }
             eventually { model.state.value.error?.startsWith("Couldn’t reach") == true }
@@ -327,6 +340,7 @@ class IngredientScanFlowTest {
 
     @Test fun mixedBatchUsesOptionalExpiryDefaultsAndRetainsClearedDatesAfterRecreation(): Unit = runBlocking {
         database.clearAllTables()
+        database.useTestAccount()
         val scenario = ActivityScenario.launch(MainActivity::class.java)
         try {
             val model = openReview(scenario, listOf(
@@ -356,6 +370,7 @@ class IngredientScanFlowTest {
 
     @Test fun batchReviewOffersAllNineFoodOptionsAndPersistsTheThreeNewGroups(): Unit = runBlocking {
         database.clearAllTables()
+        database.useTestAccount()
         val scenario = ActivityScenario.launch(MainActivity::class.java)
         try {
             val model = openReview(scenario, listOf(food("Juice", 1, "Beverages"),
@@ -392,7 +407,7 @@ class IngredientScanFlowTest {
         lateinit var model: IngredientScanViewModel
         scenario.onActivity { activity ->
             model = scanModel(activity)
-            model.recognizeFood = { foods }
+            model.setFoodRecognizer { foods }
             model.scan(Uri.EMPTY)
         }
         waitFor(TITLE)
@@ -417,12 +432,15 @@ class IngredientScanFlowTest {
     }
     private fun waitFor(text: String) = eventually { find(text) != null }
     private fun click(text: String) {
-        if (text.startsWith("Choose Subcategory for")) CategoryMenuTestSupport.reveal(instrumentation, text)
-        if (text.startsWith("Select Subcategory:")) CategoryMenuTestSupport.reveal(instrumentation, text)
-        waitFor(text)
-        var node = find(text)!!
-        while (!node.isClickable && node.parent != null) node = node.parent
-        assertTrue(node.performAction(AccessibilityNodeInfo.ACTION_CLICK))
+        if (text.startsWith("Choose Subcategory for ") || text.startsWith("Select ")) {
+            CategoryMenuTestSupport.reveal(instrumentation, text)
+        }
+        fun actionable(): AccessibilityNodeInfo? {
+            var node = find(text) ?: return null
+            while (!node.isClickable) node = node.parent ?: return null
+            return node.takeIf { it.isEnabled }
+        }
+        eventually("Could not click $text") { actionable()?.performAction(AccessibilityNodeInfo.ACTION_CLICK) == true }
         instrumentation.waitForIdleSync()
     }
     private fun setText(old: String, value: String) {

@@ -4,6 +4,7 @@ import android.content.Context
 import android.view.accessibility.AccessibilityNodeInfo
 import androidx.test.core.app.ActivityScenario
 import androidx.test.platform.app.InstrumentationRegistry
+import com.xmum.smartgrocery.data.local.useTestAccount
 import com.google.gson.Gson
 import com.xmum.smartgrocery.data.local.entity.ChecklistHistoryItem
 import com.xmum.smartgrocery.data.local.entity.GroceryItem
@@ -38,6 +39,7 @@ class ChecklistStepsUiTest {
         var scenario: ActivityScenario<MainActivity>? = null
         try {
             database.clearAllTables()
+            database.useTestAccount()
             val eggs = database.groceryDao().insertWithLog(GroceryItem(name = "Eggs", quantity = 5, price = 2.0,
                 category = "Dairy", expiryDate = 1900000000000L, threshold = 0)).toInt()
             database.checklistHistoryDao().insert(ChecklistHistoryItem(checklist.id, checklist.dishName, checklist.servings,

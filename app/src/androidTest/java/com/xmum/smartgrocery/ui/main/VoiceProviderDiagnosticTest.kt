@@ -28,7 +28,7 @@ class VoiceProviderDiagnosticTest {
         val scenario = ActivityScenario.launch(MainActivity::class.java)
         fun report(message: String) = instrumentation.sendStatus(2, Bundle().apply { putString("voice_provider", message) })
         try {
-            for (language in VoiceLanguage.entries) {
+            for (language in VoiceLanguage.values()) {
                 val request = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
                     putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
                     putExtra(RecognizerIntent.EXTRA_LANGUAGE, language.tag)

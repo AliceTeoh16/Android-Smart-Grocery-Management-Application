@@ -131,7 +131,7 @@ fun InventoryScreen(
                     horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     InventoryCategoryFilterChip("All categories", selectedCategory == null,
                         PantryColors.Pastel, PantryColors.Green) { onCategorySelected(null) }
-                    Category.entries.forEach { category ->
+                    Category.values().forEach { category ->
                         InventoryCategoryFilterChip(category.label, selectedCategory == category,
                             Color(category.background), Color(category.foreground)) { onCategorySelected(category) }
                     }
@@ -203,7 +203,7 @@ private fun InventoryFoodSubcategoryFilter(selectedSubcategory: FoodSubcategory?
                 }
             }
             DropdownMenu(expanded, { expanded = false }) {
-                (listOf<FoodSubcategory?>(null) + FoodSubcategory.entries).forEach { subcategory ->
+                (listOf<FoodSubcategory?>(null) + FoodSubcategory.values()).forEach { subcategory ->
                     val label = subcategory?.label ?: "All food subcategories"
                     DropdownMenuItem(text = { Text(label) },
                         modifier = Modifier.semantics {

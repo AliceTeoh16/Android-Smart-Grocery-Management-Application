@@ -42,6 +42,10 @@ class RecipeFragment : Fragment() {
     private var handledAutoGenerate = false
     private var searchHasFocus = false
     private var displayedChecklistState by mutableStateOf(ChecklistUiState())
+    private var renderedIngredients: List<com.xmum.smartgrocery.data.local.entity.GroceryItem>? = null
+    private var renderedWarningDays = -1
+    private var renderedIngredientDay = 0L
+    private var renderedSearchHistory: List<String>? = null
 
     companion object {
         private const val ARG_AUTO_GENERATE = "auto_generate"
@@ -213,6 +217,12 @@ class RecipeFragment : Fragment() {
     }
 
     private fun updateIngredientChips(state: ChecklistUiState) {
+        val today = DateUtils.getStartOfToday()
+        if (renderedIngredients == state.availableIngredients && renderedWarningDays == state.expiryWarningDays &&
+            renderedIngredientDay == today) return
+        renderedIngredients = state.availableIngredients
+        renderedWarningDays = state.expiryWarningDays
+        renderedIngredientDay = today
         binding.chipGroupIngredients.removeAllViews()
 
         if (state.availableIngredients.isEmpty()) {
@@ -258,11 +268,12 @@ class RecipeFragment : Fragment() {
     }
 
     private fun updateSearchHistory(state: ChecklistUiState) {
-        binding.chipGroupSearchHistory.removeAllViews()
-
         val shouldShow = searchHasFocus && state.searchHistory.isNotEmpty()
         binding.layoutSearchHistory.visibility = if (shouldShow) View.VISIBLE else View.GONE
         if (!shouldShow) return
+        if (renderedSearchHistory == state.searchHistory) return
+        renderedSearchHistory = state.searchHistory
+        binding.chipGroupSearchHistory.removeAllViews()
 
         state.searchHistory.forEach { query ->
             binding.chipGroupSearchHistory.addView(createHistoryChip(query))
@@ -388,6 +399,8 @@ class RecipeFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
+        renderedIngredients = null
+        renderedSearchHistory = null
         _binding = null
     }
 

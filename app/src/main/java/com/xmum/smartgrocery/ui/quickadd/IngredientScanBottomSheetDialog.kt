@@ -98,9 +98,9 @@ class IngredientScanBottomSheetDialog : BottomSheetDialogFragment() {
                                 homes.map { HouseholdContextOption(it.householdId, it.name) }, { household ->
                                     if (!state.saving && target != null) {
                                         if (household && homes.isEmpty()) destinationError = "Create or join a household before sharing inventory."
-                                        else { target = target!!.copy(householdId = if (household) homes.first().householdId else null); destinationError = null }
+                                        else { target = target!!.withHouseholdId(if (household) homes.first().householdId else null); destinationError = null }
                                     }
-                                }, { id -> if (!state.saving && homes.any { it.householdId == id }) target = target?.copy(householdId = id) },
+                                }, { id -> if (!state.saving && homes.any { it.householdId == id }) target = target?.withHouseholdId(id) },
                                 enabled = ready && !state.saving)
                             destinationError?.let { androidx.compose.material3.Text(it, color = androidx.compose.material3.MaterialTheme.colorScheme.error) }
                         })

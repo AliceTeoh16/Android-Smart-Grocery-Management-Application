@@ -6,10 +6,12 @@ import android.view.accessibility.AccessibilityNodeInfo
 import androidx.lifecycle.ViewModelProvider
 import androidx.test.core.app.ActivityScenario
 import androidx.test.platform.app.InstrumentationRegistry
+import com.xmum.smartgrocery.data.local.useTestAccount
 import com.google.gson.Gson
 import com.xmum.smartgrocery.data.local.entity.ChecklistHistoryItem
 import com.xmum.smartgrocery.data.local.entity.GroceryItem
 import com.xmum.smartgrocery.data.repository.RecipeRepository
+import com.xmum.smartgrocery.data.session.SessionManager
 import com.xmum.smartgrocery.ui.main.MainActivity
 import com.xmum.smartgrocery.ui.main.VoiceCommandTestRunner
 import com.xmum.smartgrocery.ui.pantrypal.PantryAction
@@ -36,13 +38,15 @@ class ChecklistInventorySelectionUiTest {
         scenario!!.onActivity { it.openPantryAction(PantryAction.AiChecklist) }
         visit("Use Eggs")
     }
-    private fun fixture(test: suspend () -> Unit): Unit = runBlocking {
+    private fun fixture(household: Boolean = false, test: suspend () -> Unit): Unit = runBlocking {
         val prefs = instrumentation.targetContext.getSharedPreferences("ai_checklist_store", Context.MODE_PRIVATE)
         val original = prefs.getString("saved_checklists", null)
         val originalPointer = prefs.getString("active_history_id", null)
         val originalMarker = prefs.getBoolean("room_history_snapshot_migrated", false)
         try {
             database.clearAllTables()
+            database.useTestAccount()
+            if (household) SessionManager(database).createHousehold("Checklist test pantry")
             eggs = database.groceryDao().insertWithLog(GroceryItem(name = "Eggs", quantity = 5, price = 2.0,
                 category = "Dairy", expiryDate = 1900000000000L, threshold = 0)).toInt()
             tomato = database.groceryDao().insertWithLog(GroceryItem(name = "Tomato", quantity = 4, price = 2.0,
@@ -77,7 +81,7 @@ class ChecklistInventorySelectionUiTest {
         assertEquals(4, database.groceryDao().getItemById(tomato)!!.quantity)
         capture("checkboxes")
     }
-    @Test fun householdSelectionAndReopenPreserveUncheckedStockAndCookOnlyCheckedIngredients() = fixture {
+    @Test fun householdSelectionAndReopenPreserveUncheckedStockAndCookOnlyCheckedIngredients() = fixture(household = true) {
         click("Use Eggs"); eventually { !state().selectableInventoryItems.first().isSelected }
         click("Add Selected (2) to Shopping List"); visit(warning); click("Household / Shared Shopping List")
         eventually { runBlocking { database.shoppingListDao().getShoppingListItems().first().size == 2 } }

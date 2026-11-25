@@ -125,7 +125,7 @@ fun HouseholdInvitationSheetContent(
             InvitationStep("1", "Open ShelfWise and sign in.")
             Spacer(Modifier.height(10.dp))
             InvitationStep("2", "Choose Join household and enter this code.")
-            Text("Use the same sharing server on both devices.", Modifier.padding(top = 12.dp),
+            Text("Use the latest ShelfWise app on both devices.", Modifier.padding(top = 12.dp),
                 style = MaterialTheme.typography.bodySmall, color = PantryColors.Muted)
             Spacer(Modifier.height(22.dp))
             HouseholdPrimaryAction("Share invitation link", PantryIcons.Share, canShare, onShare)

@@ -1,5 +1,6 @@
 package com.xmum.smartgrocery.ui.main
 
+import com.xmum.smartgrocery.data.local.dao.setBudget
 import android.content.Context
 import android.os.Bundle
 import android.view.accessibility.AccessibilityNodeInfo
@@ -23,6 +24,8 @@ class CrossDeviceSharingUiTest {
     private val db get() = (instrumentation as VoiceCommandTestRunner).database
 
     @Test fun connectAndPublishThroughTheUiThenAutomaticallyPullAnotherDevicesBudget(): Unit = runBlocking {
+        org.junit.Assume.assumeFalse("This development test configures a separate test server; phone builds fix the service address.",
+            com.xmum.smartgrocery.BuildConfig.MANAGED_SERVER)
         val authPrefs = context.getSharedPreferences("smart_inventory_auth", Context.MODE_PRIVATE)
         val authBefore = authPrefs.all.toMap()
         val config = context.getSharedPreferences("household_sharing", Context.MODE_PRIVATE)

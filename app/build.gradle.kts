@@ -9,20 +9,22 @@ android {
     namespace = "com.xmum.smartgrocery"
     compileSdk = 34
 
-    val aiBaseUrl = providers.gradleProperty("AI_BASE_URL")
+    val appBaseUrl = providers.gradleProperty("APP_BASE_URL")
+    val aiBaseUrl = appBaseUrl.orElse(providers.gradleProperty("AI_BASE_URL"))
         .orElse("http://10.0.2.2:8787/")
 
     defaultConfig {
         applicationId = "com.xmum.smartgrocery"
         minSdk = 24
         targetSdk = 34
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = 2
+        versionName = "1.1"
 
         testInstrumentationRunner = "com.xmum.smartgrocery.ui.main.VoiceCommandTestRunner"
         buildConfigField("String", "AI_BASE_URL", "\"${aiBaseUrl.get()}\"")
-        val sharingBaseUrl = providers.gradleProperty("SHARING_BASE_URL").orElse("http://10.0.2.2:8790/")
+        val sharingBaseUrl = appBaseUrl.orElse(providers.gradleProperty("SHARING_BASE_URL")).orElse("http://10.0.2.2:8790/")
         buildConfigField("String", "SHARING_BASE_URL", "\"${sharingBaseUrl.get()}\"")
+        buildConfigField("boolean", "MANAGED_SERVER", appBaseUrl.isPresent.toString())
     }
 
     buildTypes {

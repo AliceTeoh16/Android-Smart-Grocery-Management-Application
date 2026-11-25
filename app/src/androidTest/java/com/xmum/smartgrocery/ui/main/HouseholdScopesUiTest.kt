@@ -1,5 +1,7 @@
 package com.xmum.smartgrocery.ui.main
 
+import com.xmum.smartgrocery.data.local.dao.getBudgetForMonthSync
+import com.xmum.smartgrocery.data.local.dao.setBudget
 import android.content.Context
 import android.os.Bundle
 import android.view.accessibility.AccessibilityNodeInfo

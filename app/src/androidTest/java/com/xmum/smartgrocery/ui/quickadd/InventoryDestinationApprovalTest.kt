@@ -72,7 +72,7 @@ class InventoryDestinationApprovalTest {
                     val fragment = IngredientScanBottomSheetDialog()
                     fragment.showNow(activity.supportFragmentManager, IngredientScanBottomSheetDialog.TAG)
                     val model = ViewModelProvider(fragment)[IngredientScanViewModel::class.java]
-                    model.recognizeFood = { listOf(VisualFoodItem(name, "Food & Beverage", 1, "Produce")) }
+                    model.setFoodRecognizer { listOf(VisualFoodItem(name, "Food & Beverage", 1, "Produce")) }
                     model.scan(Uri.parse("content://fixture/photo"))
                 }
                 waitFor("Batch Review Checklist"); waitFor("Personal (private)")
