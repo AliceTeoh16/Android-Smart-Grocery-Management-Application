@@ -1,5 +1,6 @@
 [CmdletBinding()]
-param([Parameter(Mandatory = $true)][string]$ServerUrl, [switch]$Offline)
+param([Parameter(Mandatory = $true)][string]$ServerUrl, [switch]$Offline,
+    [ValidateSet('turso','sqlite','any')][string]$ExpectedStorage = 'turso')
 
 $ErrorActionPreference = 'Stop'
 $cloudRoot = Split-Path -Parent $PSScriptRoot
@@ -10,13 +11,17 @@ if (-not [Uri]::TryCreate($ServerUrl, [UriKind]::Absolute, [ref]$cloudUri) -or
     throw 'Use the HTTPS server origin only, such as https://your-service.onrender.com/.'
 }
 $cloudUrl = $cloudUri.GetLeftPart([UriPartial]::Authority) + '/'
-try { $cloudHealth = Invoke-RestMethod -Uri ($cloudUrl + 'health') -TimeoutSec 15 }
+Write-Host 'Checking the hosted service. A sleeping free service can take about a minute to start.'
+try { $cloudHealth = Invoke-RestMethod -Uri ($cloudUrl + 'health') -TimeoutSec 90 }
 catch { throw 'Cannot verify the hosted service. Confirm its HTTPS address and deployment status before building.' }
 if ($cloudHealth.service -eq 'shelfwise-import') {
     throw 'Complete the database import and set SHARING_IMPORT_MODE=false before building the APK.'
 }
 if ($cloudHealth.ok -ne $true -or $cloudHealth.service -ne 'shelfwise-gateway' -or $cloudHealth.sharing -ne 'household-sharing') {
     throw 'The address does not identify a healthy ShelfWise gateway and sharing service.'
+}
+if ($ExpectedStorage -ne 'any' -and $cloudHealth.sharingStorage -ne $ExpectedStorage) {
+    throw "The hosted service is not using the expected $ExpectedStorage storage. Check its database configuration."
 }
 $cloudJbr = 'C:\Program Files\Android\Android Studio\jbr'
 if (-not $env:JAVA_HOME -and (Test-Path -LiteralPath (Join-Path $cloudJbr 'bin/java.exe'))) { $env:JAVA_HOME = $cloudJbr }

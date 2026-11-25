@@ -48,7 +48,7 @@ export function createGateway({ aiOrigin = 'http://127.0.0.1:8787', sharingOrigi
         }));
         // Preserve AI health capabilities used by the Android client.
         json(response, 200, { ...aiHealth, ok: aiHealth.ok === true && sharingHealth.service === 'household-sharing',
-          service: 'shelfwise-gateway', sharing: sharingHealth.service });
+          service: 'shelfwise-gateway', sharing: sharingHealth.service, sharingStorage: sharingHealth.storage || 'unknown' });
       } catch {
         json(response, 503, { ok: false, service: 'shelfwise-gateway', message: 'A service is temporarily unavailable.' });
       }

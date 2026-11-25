@@ -18,7 +18,7 @@ test('routes auth to sharing and preserves AI JSON, binary bodies, status, heade
   const stub = label => http.createServer(async (req, res) => {
     if (req.url === '/health') {
       res.setHeader('Content-Type', 'application/json');
-      res.end(JSON.stringify(label === 'ai' ? { ok: true, inventoryScan: { enabled: true } } : { service: 'household-sharing' }));
+      res.end(JSON.stringify(label === 'ai' ? { ok: true, inventoryScan: { enabled: true } } : { service: 'household-sharing', storage: 'turso' }));
       return;
     }
     const chunks = []; for await (const chunk of req) chunks.push(chunk);
@@ -42,6 +42,7 @@ test('routes auth to sharing and preserves AI JSON, binary bodies, status, heade
     }
     const health = await (await fetch(url + '/health')).json();
     assert.equal(health.ok, true); assert.equal(health.service, 'shelfwise-gateway');
+    assert.equal(health.sharingStorage, 'turso');
     assert.deepEqual(health.inventoryScan, { enabled: true });
     assert.equal((await (await fetch(url + '/health/sharing')).json()).service, 'household-sharing');
   } finally { await close(gateway); await close(ai); await close(sharing); }

@@ -4,9 +4,11 @@ import { mkdtempSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { createSharingServer } from './server.js';
+import { protocolDatabase } from './storage-test-support.js';
 
 async function fixture(options) {
-  const service = createSharingServer(options);
+  const bridge = process.env.SHARING_TEST_STORAGE === 'turso' ? protocolDatabase(options?.databasePath) : null;
+  const service = createSharingServer({ ...options, ...(bridge ? { storage: await bridge.storage() } : {}) });
   await new Promise(resolve => service.server.listen(0, '127.0.0.1', resolve));
   const base = `http://127.0.0.1:${service.server.address().port}`;
   async function call(path, token, body) {
@@ -19,7 +21,7 @@ async function fixture(options) {
     const result = await call('/v1/auth/register', null, { name: email.split('@')[0], email, password: 'correct123' });
     assert.equal(result.status, 201); return result.data;
   };
-  return { ...service, call, register };
+  return { ...service, close: async () => { await service.close(); bridge?.close(); }, call, register };
 }
 const stock = quantity => ({ name: 'Eggs', quantity, price: 2, category: 'Food & Beverage', subcategory: 'Dairy', expiryDate: Date.now() + 86400000, threshold: 1, purchasedDate: Date.now() });
 const mutation = (device, collection, id, data, extra = {}) => ({ mutationId: `${device}:${collection}:${id}`, collection, id, data, baseVersion: 0, deleted: false, ...extra });

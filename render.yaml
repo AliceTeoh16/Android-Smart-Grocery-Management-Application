@@ -1,12 +1,12 @@
-# Paid hosting and persistent storage. Review the quoted cost in Render before deploying.
+# Render Free + Turso Free. No paid disk or paid compute is configured.
 services:
   - type: web
-    name: shelfwise-backend
+    name: shelfwise-free-backend
     runtime: node
     region: singapore
-    plan: 0.5c-512mb
+    plan: free
     rootDir: backend
-    buildCommand: npm ci --omit=dev
+    buildCommand: npm ci --omit=dev && npm --prefix sharing ci --omit=dev
     startCommand: node deploy/start.mjs
     healthCheckPath: /health
     autoDeployTrigger: "off"
@@ -15,14 +15,12 @@ services:
         value: "24"
       - key: GEMINI_API_KEY
         sync: false
-      - key: SHARING_DATA_DIR
-        value: /var/data/households
-      - key: APK_PATH
-        value: /var/data/downloads/ShelfWise.apk
-      # Start safely in import mode so existing accounts can be copied before the DB is opened.
+      - key: SHARING_STORAGE
+        value: turso
+      - key: TURSO_DATABASE_URL
+        sync: false
+      - key: TURSO_AUTH_TOKEN
+        sync: false
+      # Import existing household data before turning this off.
       - key: SHARING_IMPORT_MODE
         value: "true"
-    disk:
-      name: shelfwise-data
-      mountPath: /var/data
-      sizeGB: 1
