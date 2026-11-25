@@ -20,6 +20,7 @@ import com.xmum.smartgrocery.R
 import com.xmum.smartgrocery.SmartGroceryApp
 import com.xmum.smartgrocery.ui.auth.LocalAuthSession
 import com.xmum.smartgrocery.ui.main.MainActivity
+import com.xmum.smartgrocery.ui.history.PurchaseHistoryFragment
 import java.util.Locale
 
 /** Full-screen presentation of the existing account details and sign-out action. */
@@ -48,8 +49,13 @@ class ProfileSettingsDialog : DialogFragment() {
                         onBack = { dismiss() },
                         onHousehold = { HouseholdContextDialog.show(this@ProfileSettingsDialog) },
                         onPurchaseHistory = {
-                            (activity as? MainActivity)?.openPantryAction(PantryAction.PurchaseHistory)
-                            dismiss()
+                            if (childFragmentManager.findFragmentByTag(PurchaseHistoryFragment.TAG) == null) {
+                                PurchaseHistoryFragment().show(
+                                    childFragmentManager.beginTransaction()
+                                        .addToBackStack(PurchaseHistoryFragment.BACK_STACK),
+                                    PurchaseHistoryFragment.TAG,
+                                )
+                            }
                         },
                         onPrivacyPolicy = { privacyOpen = true },
                         onSignOut = {
