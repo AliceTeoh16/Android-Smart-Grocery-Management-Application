@@ -118,16 +118,29 @@ class MainActivity : AppCompatActivity() {
         legacyBackCallback = object : OnBackPressedCallback(activeNavigationItemId != R.id.navigation_home) {
             override fun handleOnBackPressed() {
                 val currentFragment = supportFragmentManager.findFragmentById(R.id.fragment_container)
+                if (currentFragment is PurchaseHistoryFragment) {
+                    supportFragmentManager.popBackStack()
+                    return
+                }
                 if (currentFragment is ShoppingListFragment && currentFragment.popFeatureBackStack()) return
                 showPantryFlow(PantryEntry.Home)
             }
         }
         onBackPressedDispatcher.addCallback(this, legacyBackCallback)
+        supportFragmentManager.addOnBackStackChangedListener {
+            updateNavigationChrome(
+                supportFragmentManager.findFragmentById(R.id.fragment_container) is PurchaseHistoryFragment ||
+                    activeNavigationItemId != R.id.navigation_home,
+            )
+        }
         setupBottomNavigation()
         if (savedInstanceState == null) {
             showPantryFlow(if (LocalAuthSession(this).currentProfile().signedIn) PantryEntry.Home else PantryEntry.Welcome)
         } else {
-            updateNavigationChrome(activeNavigationItemId != R.id.navigation_home)
+            updateNavigationChrome(
+                supportFragmentManager.findFragmentById(R.id.fragment_container) is PurchaseHistoryFragment ||
+                    activeNavigationItemId != R.id.navigation_home,
+            )
         }
         savedInstanceState?.getString("voice_inventory_user")?.let { actor ->
             voiceInventoryDestination = com.xmum.smartgrocery.data.local.dao.DataScope(actor, savedInstanceState.getString("voice_inventory_home"))
@@ -221,7 +234,17 @@ class MainActivity : AppCompatActivity() {
             )
             PantryAction.AiChecklist -> R.id.navigation_recipes to RecipeFragment.newInstance()
             PantryAction.Budget -> R.id.navigation_budget to BudgetFragment()
-            PantryAction.PurchaseHistory -> R.id.navigation_inventory to PurchaseHistoryFragment()
+            PantryAction.PurchaseHistory -> {
+                if (supportFragmentManager.findFragmentById(R.id.fragment_container) !is PurchaseHistoryFragment) {
+                    supportFragmentManager.beginTransaction()
+                        .setReorderingAllowed(true)
+                        .setCustomAnimations(R.anim.fade_in_300, R.anim.fade_out_300)
+                        .replace(R.id.fragment_container, PurchaseHistoryFragment(), PurchaseHistoryFragment.TAG)
+                        .addToBackStack(PurchaseHistoryFragment.BACK_STACK)
+                        .commit()
+                }
+                return
+            }
             PantryAction.Profile, PantryAction.AllActivity -> return
         }
         activeNavigationItemId = navigationId
@@ -263,6 +286,10 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun replaceFragment(fragment: Fragment) {
+        // Switching features leaves history behind instead of retaining a stale return entry.
+        supportFragmentManager.popBackStackImmediate(
+            PurchaseHistoryFragment.BACK_STACK, androidx.fragment.app.FragmentManager.POP_BACK_STACK_INCLUSIVE,
+        )
         supportFragmentManager.beginTransaction()
             .setCustomAnimations(R.anim.fade_in_300, R.anim.fade_out_300)
             .replace(R.id.fragment_container, fragment)
