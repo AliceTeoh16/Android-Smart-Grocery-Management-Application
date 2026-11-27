@@ -30,8 +30,9 @@ class InventoryAdapter(
         fun bind(card: InventoryCardItem) {
             val item = card.item
             binding.textItemName.text = item.name
-            binding.textItemMeta.text = listOfNotNull(item.subcategory, "RM ${String.format("%.2f", item.price)}/${item.unit}",
-                item.storageLocation.takeUnless { it == "Not set" }).joinToString(" · ")
+            binding.textItemMeta.text = listOfNotNull(item.subcategory, "RM ${String.format("%.2f", item.price)} / ${item.unit}",
+                item.storageLocation.takeUnless { it == "Not set" }?.let { "Storage: $it" })
+                .filter { it.isNotBlank() }.joinToString("\n")
             binding.textQuantity.text = card.totalQuantity.toString()
             binding.textQuantityUnit.text = "Qty (${item.unit})"
             binding.textCategoryPill.text = categoryLabelFor(item.category)
