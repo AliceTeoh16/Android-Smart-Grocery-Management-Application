@@ -7,7 +7,7 @@
         <View android:id="@+id/view_category_indicator" android:layout_width="32dp" android:layout_height="4dp" android:layout_marginBottom="10dp" android:background="#315B40" />
         <androidx.constraintlayout.widget.ConstraintLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:minHeight="40dp">
             <TextView android:id="@+id/text_item_name" android:layout_width="0dp" android:layout_height="wrap_content"
-                android:layout_marginEnd="4dp" android:maxLines="2" android:ellipsize="end" android:textSize="15sp" android:textStyle="bold" android:textColor="#24372B"
+                android:layout_marginEnd="4dp" android:breakStrategy="high_quality" android:hyphenationFrequency="none" android:textSize="15sp" android:textStyle="bold" android:textColor="#24372B"
                 app:layout_constraintStart_toStartOf="parent" app:layout_constraintEnd_toStartOf="@id/button_edit_item" app:layout_constraintTop_toTopOf="parent" />
             <ImageButton android:id="@+id/button_edit_item" android:layout_width="32dp" android:layout_height="32dp" android:padding="7dp"
                 android:background="?android:attr/selectableItemBackgroundBorderless" android:src="@drawable/ic_edit_24" android:contentDescription="Edit item" app:tint="#315B40"
@@ -17,14 +17,16 @@
             android:maxWidth="160dp" android:maxLines="2" android:ellipsize="end" android:gravity="center" android:paddingHorizontal="10dp"
             android:textSize="10sp" android:textStyle="bold" android:textColor="#315B40" android:background="@drawable/pantry_inventory_quantity_bg" />
         <TextView android:id="@+id/text_item_meta" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="10dp"
-            android:maxLines="2" android:ellipsize="end" android:textColor="#315B40" android:textSize="14sp" android:textStyle="bold" />
-        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="12dp" android:gravity="center_vertical" android:orientation="horizontal">
-            <TextView android:id="@+id/text_quantity_unit" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Qty" android:textColor="#738075" android:textSize="10sp" />
-            <LinearLayout android:id="@+id/layout_quantity_controls" android:layout_width="wrap_content" android:layout_height="40dp"
+            android:minLines="3" android:breakStrategy="high_quality" android:hyphenationFrequency="none" android:lineSpacingExtra="2dp"
+            android:textColor="#315B40" android:textSize="12sp" android:textStyle="bold" />
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="10dp" android:orientation="vertical">
+            <TextView android:id="@+id/text_quantity_unit" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginBottom="6dp" android:text="Qty" android:textColor="#738075" android:textSize="10sp" />
+            <LinearLayout android:id="@+id/layout_quantity_controls" android:layout_width="match_parent" android:layout_height="wrap_content" android:minHeight="40dp"
                 android:background="@drawable/pantry_inventory_quantity_bg" android:gravity="center" android:orientation="horizontal" android:paddingHorizontal="4dp">
                 <ImageButton android:id="@+id/button_decrement" android:layout_width="30dp" android:layout_height="32dp" android:padding="6dp"
                     android:background="?android:attr/selectableItemBackgroundBorderless" android:src="@drawable/ic_minus_24" android:contentDescription="Decrease quantity" app:tint="#315B40" />
-                <TextView android:id="@+id/text_quantity" android:layout_width="wrap_content" android:minWidth="28dp" android:layout_height="wrap_content" android:gravity="center"
+                <androidx.appcompat.widget.AppCompatTextView android:id="@+id/text_quantity" android:layout_width="0dp" android:layout_weight="1" android:layout_height="40dp" android:gravity="center" android:maxLines="1"
+                    app:autoSizeTextType="uniform" app:autoSizeMinTextSize="8sp" app:autoSizeMaxTextSize="14sp" app:autoSizeStepGranularity="1sp"
                     android:textColor="#315B40" android:textSize="14sp" android:textStyle="bold" />
                 <ImageButton android:id="@+id/button_increment" android:layout_width="30dp" android:layout_height="32dp" android:padding="7dp"
                     android:background="@drawable/pantry_inventory_increment_bg" android:src="@drawable/ic_plus_24" android:contentDescription="Increase quantity" app:tint="#FFFFFF" />
@@ -33,7 +35,7 @@
         <TextView android:id="@+id/text_expiry" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:textSize="10sp" android:textColor="#738075" />
         <TextView android:id="@+id/text_shared_change" android:layout_width="match_parent" android:layout_height="wrap_content"
             android:layout_marginTop="6dp" android:textSize="10sp" android:textColor="#738075"
-            android:maxLines="2" android:ellipsize="end" android:visibility="gone" />
+            android:breakStrategy="high_quality" android:hyphenationFrequency="none" android:visibility="gone" />
         <LinearLayout android:id="@+id/layout_expired_actions" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="10dp"
             android:gravity="center_vertical" android:orientation="horizontal" android:visibility="gone">
             <com.google.android.material.button.MaterialButton android:id="@+id/button_toss" style="@style/Widget.MaterialComponents.Button.TextButton"
