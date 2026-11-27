@@ -5,6 +5,46 @@ import { protocolDatabase } from './storage-test-support.js';
 import { createSharingServer } from './server.js';
 
 for (const kind of ['sqlite', 'turso']) {
+  test(kind + ': older shared items recover missing/null/blank authors without losing recent change details', async () => {
+    const bridge = kind === 'turso' ? protocolDatabase() : null;
+    const store = bridge ? await bridge.storage() : createSqliteStorage();
+    try {
+      await initializeStorage(store);
+      await store.run("INSERT INTO users VALUES('alice','alice@example.test','Alice','salt','hash')");
+      await store.run("INSERT INTO households VALUES('home','Home','','123456')");
+      const examples = {
+        missing: {}, null: { addedByName: null }, empty: { addedByName: '' }, whitespace: { addedByName: '  ' },
+        knownChange: { addedByName: null, lastModifiedByName: 'Ben', lastModifiedAction: 'Updated', lastModifiedAt: 123 },
+        missingCreatorKnownChange: { lastModifiedByName: 'Ben', lastModifiedAction: 'Updated', lastModifiedAt: 321 },
+        knownCreator: { addedByName: 'Original name', lastModifiedByName: 'Ben', lastModifiedAction: 'Checked', lastModifiedAt: 456 }
+      };
+      for (const collection of ['inventory', 'shopping']) {
+        for (const [id, fields] of Object.entries(examples)) {
+          const data = { itemName: 'Sample', quantity: 2, ...fields };
+          await store.run('INSERT INTO records VALUES(?,?,?,?,1,0,?)', 'home', collection, id, JSON.stringify(data), 'alice');
+        }
+      }
+      await store.run('INSERT INTO records VALUES(?,?,?,?,1,1,?)', 'home', 'inventory', 'deleted', '{}', 'alice');
+      await store.run('INSERT INTO records VALUES(?,?,?,?,1,0,?)', 'home', 'budget', 'budget', '{"limit":50}', 'alice');
+      await initializeStorage(store);
+      for (const collection of ['inventory', 'shopping']) {
+        for (const [id, fields] of Object.entries(examples)) {
+          const row = await store.one('SELECT data,version FROM records WHERE collection=? AND id=?', collection, id);
+          const expected = { itemName: 'Sample', quantity: 2, ...fields, addedByName: id === 'knownCreator' ? 'Original name' : 'Alice' };
+          assert.deepEqual(JSON.parse(row.data), expected);
+          assert.equal(row.version, id === 'knownCreator' ? 1 : 2);
+        }
+      }
+      assert.equal((await store.one("SELECT version FROM records WHERE id='deleted'")).version, 1);
+      assert.equal((await store.one("SELECT version FROM records WHERE id='budget'")).version, 1);
+      const before = await store.all('SELECT * FROM records ORDER BY collection,id');
+      await initializeStorage(store);
+      assert.deepEqual(await store.all('SELECT * FROM records ORDER BY collection,id'), before, 'repair must be idempotent');
+    } finally { await store.close(); bridge?.close(); }
+  });
+}
+
+for (const kind of ['sqlite', 'turso']) {
   test(kind + ': transactions isolate awaited writes, preserve foreign keys and roll back failed batches', async () => {
     const bridge = kind === 'turso' ? protocolDatabase() : null;
     const store = bridge ? await bridge.storage() : createSqliteStorage();

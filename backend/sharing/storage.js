@@ -99,8 +99,8 @@ export async function initializeStorage(store) {
   await store.exec('PRAGMA foreign_keys=ON;' + SHARING_SCHEMA);
   // One statement also handles older shared records without one network request per item.
   await store.run(`UPDATE records SET data=json_set(data,
-    '$.addedByName',(SELECT name FROM users WHERE id=records.userId),
-    '$.lastModifiedByName',NULL,'$.lastModifiedAction',NULL,'$.lastModifiedAt',NULL),version=version+1
-    WHERE collection IN ('inventory','shopping') AND deleted=0 AND json_type(data,'$.addedByName') IS NULL
-    AND EXISTS(SELECT 1 FROM users WHERE id=records.userId)`);
+    '$.addedByName',(SELECT name FROM users WHERE id=records.userId)),version=version+1
+    WHERE collection IN ('inventory','shopping') AND deleted=0
+    AND COALESCE(TRIM(json_extract(data,'$.addedByName')),'')=''
+    AND EXISTS(SELECT 1 FROM users WHERE id=records.userId AND LENGTH(TRIM(name))>0)`);
 }
